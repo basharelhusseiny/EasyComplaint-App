@@ -1,6 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router";
 import Layout from "./layout/Layout";
 import Home from "./pages/Home";
+import MobileMenuProvider from "./context/MobileMenuContext";
 
 const App = () => {
   const router = createBrowserRouter([
@@ -12,7 +13,9 @@ const App = () => {
   ]);
   return (
     <>
-      <RouterProvider router={router} />
+      <MobileMenuProvider>
+        <RouterProvider router={router} />
+      </MobileMenuProvider>
     </>
   );
 };

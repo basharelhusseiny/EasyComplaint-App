@@ -1,35 +1,69 @@
-import { Link } from "react-router";
+import { Link, NavLink } from "react-router";
+import { FiMenu } from "react-icons/fi";
+import CloseButton from "../../common/CloseButton";
+import { useMobileMenuContext } from "../../context/MobileMenuContext";
+import { CiLogout } from "react-icons/ci";
 
-const Header = () => {
-  const navLinks = [
-    { id: 1, link: "إدارة أنواع الشكاوي", path: "/complaint-types" },
-    { id: 2, link: "إدارة الأقسام", path: "/departments" },
-    { id: 3, link: "إدارة المستخدمين", path: "/users" },
-    { id: 4, link: "قائمة الشكاوي", path: "/complaints" },
-    { id: 5, link: "للتواصل معنا", path: "/complaints" },
-  ];
+const Header = ({ navLinks }) => {
+  const { isMobMenuOpen, setIsMobMenuOpen } = useMobileMenuContext();
+
   return (
-    <header className="fixed z-50 left-0 top-0 w-full h-[72px] bg-white shadow-lg" dir="rtl">
+    <header
+      className="fixed z-50 left-0 top-0 w-full h-[72px] bg-white shadow-lg"
+      dir="rtl"
+    >
       <div className="container mx-auto px-5 h-full">
         <div className="flex items-center justify-between h-full">
+          {/* Logo */}
           <div>
-            <Link className="block font-bold text-xl text-green-600">
+            <Link to="/" className="block font-bold text-xl text-green-600">
               كلية العلوم
             </Link>
           </div>
-          <nav className="flex  items-center gap-5">
-            {navLinks.map((link) => {
-              return (
-                <Link key={link.id} className="block font-semibold text-[17px] hover:text-green-600">
-                  {link.link}
-                </Link>
-              );
-            })}
+
+          <nav className="hidden lg:flex items-center gap-5">
+            {navLinks.map((link) => (
+              <NavLink
+                key={link.id}
+                to={link.path}
+                className={({ isActive }) =>
+                  `block font-semibold text-[17px] hover:text-green-600 duration-200 ${
+                    isActive ? "text-green-600" : ""
+                  }`
+                }
+              >
+                {link.link}
+              </NavLink>
+            ))}
           </nav>
-          <div>
-            <p className="bg-gradient-to-bl from-green-400 to-green-800 hover:from-green-800 hover:to-green-400 px-5 py-2 rounded-xl text-white cursor-pointer font-semibold duration-200 transition-colors">
+
+          <div className="hidden lg:block">
+            <button className="bg-gradient-to-bl from-green-400 to-green-800 hover:from-green-800 hover:to-green-400 px-5 py-2 rounded-xl text-white cursor-pointer font-semibold duration-200 transition-colors">
               تسجيل الخروج
-            </p>
+            </button>
+          </div>
+
+          {/* Mobile Menu Controls */}
+          <div className="lg:hidden flex items-center gap-3">
+            <button className="bg-gradient-to-bl from-green-400 to-green-800 hover:from-green-800 hover:to-green-400 p-2 rounded-xl text-white cursor-pointer font-semibold duration-200 transition-colors">
+              <CiLogout size={22} />
+            </button>
+
+            {/* Mobile Menu Toggle */}
+            {isMobMenuOpen ? (
+              <CloseButton
+                onClick={() => setIsMobMenuOpen(false)}
+                isMobMenuOpen={isMobMenuOpen}
+              />
+            ) : (
+              <button
+                aria-label="menu"
+                onClick={() => setIsMobMenuOpen(!isMobMenuOpen)}
+                className="cursor-pointer hover:text-green-600 duration-300 text-black"
+              >
+                <FiMenu size={25} />
+              </button>
+            )}
           </div>
         </div>
       </div>

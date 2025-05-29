@@ -7,13 +7,15 @@ body {
   font-family: "Cairo", sans-serif;
   direction: rtl;
 }
+.activee {
+  color: green;
+}
+
 /* ::selection {
   background-color: var(--mainColor);
   color: white;
 }
-.active {
-  color: var(--mainColor);
-} */
+ */
 
 /* for Scroll */
 /* ::-webkit-scrollbar {
