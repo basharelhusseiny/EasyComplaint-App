@@ -54,7 +54,7 @@ const CallToAction = () => {
           <div className="w-full md:w-1/2">
             <div className="rounded-2xl overflow-hidden">
               <img
-                src="/public/Images/homepage/fourth.jpg"
+                src="/Images/homepage/fourth.jpg"
                 alt="هدف"
                 className="w-full h-auto object-cover"
               />
