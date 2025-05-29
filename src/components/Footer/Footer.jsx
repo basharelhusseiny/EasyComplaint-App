@@ -1,13 +1,13 @@
-import React from 'react'
-import { Link } from "react-router"
+import React from "react";
+import { Link } from "react-router";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-  
+
   return (
-    <footer className="bg-gray-800 text-white py-8">
-      <div className="container mx-auto px-4">
-        <div className="flex flex-col md:flex-row justify-between items-center">
+    <footer className="bg-gray-800 text-white py-6">
+      <div className="container mx-auto px-5">
+        {/* <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="mb-6 md:mb-0">
             <h2 className="text-2xl font-bold text-green-400 mb-2">كلية العلوم</h2>
             <p className="text-gray-300">بوابتك لعالم المعرفة والتجربة</p>
@@ -32,14 +32,16 @@ const Footer = () => {
               </ul>
             </div>
           </div>
-        </div>
-        
-        <div className="border-t border-gray-700 mt-8 pt-6 text-center">
-          <p className="text-gray-400">جميع الحقوق محفوظة &copy; {currentYear} كلية العلوم</p>
+        </div> */}
+
+        <div className="text-center">
+          <p className="text-gray-100">
+             جميع الحقوق محفوظة &copy; {currentYear} كلية العلوم | نحن نستمع إليك و نعمل علي التطوير
+          </p>
         </div>
       </div>
     </footer>
-  )
-}
+  );
+};
 
-export default Footer
+export default Footer;

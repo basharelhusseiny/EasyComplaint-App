@@ -1,10 +1,21 @@
 import { NavLink } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMobileMenuContext } from "../../context/MobileMenuContext";
+import { useEffect } from "react";
 
 const MobileMenu = ({ navLinks }) => {
   const { isMobMenuOpen, setIsMobMenuOpen } = useMobileMenuContext();
+  useEffect(() => {
+    if (isMobMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
 
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [isMobMenuOpen]);
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
