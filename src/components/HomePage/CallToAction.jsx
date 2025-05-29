@@ -1,4 +1,5 @@
 import { FaCheckCircle } from "react-icons/fa";
+import { motion } from "framer-motion";
 
 const CallToAction = () => {
   const priorities = [
@@ -8,11 +9,16 @@ const CallToAction = () => {
   ];
 
   return (
-    <section className="py-16 bg-white">
+    <section className="py-16 bg-white overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row items-center gap-10">
           {/* Text */}
-          <div className="w-full md:w-1/2 space-y-6">
+          <motion.div
+            initial={{ opacity: 0, x: 100 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+            className="w-full md:w-1/2 space-y-6"
+          >
             <h2 className="text-3xl font-bold text-right text-gray-800">
               صوتك يصنع الفرق في كلية العلوم!
             </h2>
@@ -49,9 +55,14 @@ const CallToAction = () => {
                 </div>
               ))}
             </div>
-          </div>
+          </motion.div>
           {/* Images */}
-          <div className="w-full md:w-1/2">
+          <motion.div
+            initial={{ opacity: 0, x: -100 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+            className="w-full md:w-1/2"
+          >
             <div className="rounded-2xl overflow-hidden">
               <img
                 src="/Images/homepage/fourth.jpg"
@@ -59,7 +70,7 @@ const CallToAction = () => {
                 className="w-full h-auto object-cover"
               />
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>

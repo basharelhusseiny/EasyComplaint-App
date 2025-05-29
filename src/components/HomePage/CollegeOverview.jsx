@@ -3,16 +3,16 @@ import { motion, useInView } from "framer-motion";
 
 const CollegeOverview = () => {
   const stats = [
-    { id: 1, number: 200, prefix: "+", text: "مختبر لأبحاث الطلاب" },
-    { id: 2, number: 50, prefix: "+", text: "قسم علمي يعمل كل عام" },
+    { id: 1, number: 1500, prefix: "+", text: "شكوى تم التعامل معها بنجاح" },
     {
-      id: 3,
+      id: 2,
       number: 95,
       prefix: "+",
       suffix: "%",
       text: "من الشكاوى تم حلها في أسبوع",
     },
-    { id: 4, number: 1500, prefix: "+", text: "شكوى تم التعامل معها بنجاح" },
+    { id: 3, number: 50, prefix: "+", text: "قضية تحسنت بفضل اقتراحاتكم" },
+    { id: 4, number: 200, prefix: "+", text: "ملاحظة تم أخذها لتطوير الخدمات" },
   ];
 
   const statsRef = useRef(null);
@@ -28,8 +28,8 @@ const CollegeOverview = () => {
         // بدء من صفر
         let startValue = 0;
         const endValue = stat.number;
-        const duration = 2000; // 2 ثانية
-        const increment = endValue / 60; // 60 إطار في الثانية
+        const duration = 3000; // 2 ثانية
+        const increment = endValue / 120; // 60 إطار في الثانية
 
         const timer = setInterval(() => {
           startValue += increment;
@@ -60,7 +60,12 @@ const CollegeOverview = () => {
         <div className="container mx-auto px-4 py-16">
           {/* Top */}
           <div className="flex flex-col lg:flex-row-reverse items-center gap-8">
-            <div className="w-full lg:w-1/2">
+            <motion.div
+              initial={{ opacity: 0, x: -100 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              className="w-full lg:w-1/2"
+            >
               <div className="relative overflow-hidden rounded-lg">
                 <img
                   src="/Images/homepage/third.jpg"
@@ -68,8 +73,13 @@ const CollegeOverview = () => {
                   className="w-full h-[400px] object-cover"
                 />
               </div>
-            </div>
-            <div className="relative z-5 w-full lg:w-1/2 text-right">
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 100 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              className="relative z-5 w-full lg:w-1/2 text-right"
+            >
               <p className="text-base md:text-lg leading-relaxed">
                 كلية العلوم هي واحدة من أعرق كليات جامعتنا، وتشتهر بتخصصاتها
                 المتنوعة في مجالات الفيزياء والكيمياء وعلوم الحاسب. لقد أعدت
@@ -81,7 +91,7 @@ const CollegeOverview = () => {
               <button className="mt-7 bg-gradient-to-bl from-green-400 to-green-800 hover:from-green-800 hover:to-green-400 px-5 py-2 rounded-xl text-white cursor-pointer font-semibold duration-200 transition-colors">
                 عرض المزيد
               </button>
-            </div>
+            </motion.div>
           </div>
         </div>
       </div>

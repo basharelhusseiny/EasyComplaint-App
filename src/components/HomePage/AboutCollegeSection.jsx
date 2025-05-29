@@ -1,3 +1,5 @@
+import { motion } from "framer-motion";
+
 const AboutCollegeSection = () => {
   const features = [
     { id: 1, title: "الخدمات التعليمية", icon: "🎓" },
@@ -6,10 +8,16 @@ const AboutCollegeSection = () => {
   ];
 
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-16 bg-gray-50 overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row gap-10 items-center">
-          <div className="w-full md:w-3/5 space-y-6">
+          {/* Tetx */}
+          <motion.div
+            initial={{ opacity: 0, x: 100 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+            className="w-full md:w-3/5 space-y-6"
+          >
             <div className="space-y-2">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-800">
                 مرحبا بكم في كلية العلوم
@@ -49,15 +57,20 @@ const AboutCollegeSection = () => {
             <button className="mt-6 bg-gradient-to-bl from-green-400 to-green-800 hover:from-green-800 hover:to-green-400 px-6 py-3 rounded-xl text-white cursor-pointer font-semibold hover:scale-105 duration-200 transition-all shadow-md">
               تقديم شكوى
             </button>
-          </div>
-
-          <div className="w-full md:w-2/5 mt-8 md:mt-0">
+          </motion.div>
+          {/* Image */}
+          <motion.div
+            initial={{ opacity: 0, x: -100 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+            className="w-full md:w-2/5 mt-8 md:mt-0"
+          >
             <img
               src="/Images/homepage/second.jpg"
               alt="كلية العلوم"
               className="w-full h-auto rounded-xl shadow-lg object-cover"
             />
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>
