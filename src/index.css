@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+html {
+  scroll-behavior: smooth;
+}
+body {
+  font-family: "Cairo", sans-serif;
+  direction: rtl;
+}
+/* ::selection {
+  background-color: var(--mainColor);
+  color: white;
+}
+.active {
+  color: var(--mainColor);
+} */
+
+/* for Scroll */
+/* ::-webkit-scrollbar {
+  width: 12px;
+}
+::-webkit-scrollbar-track {
+  background: #cbfffb;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background-color: var(--mainColor);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #026159;
+}
+.min-scrollbar::-webkit-scrollbar {
+  width: 6px;
+} */
