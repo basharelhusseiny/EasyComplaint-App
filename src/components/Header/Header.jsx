@@ -1,4 +1,4 @@
-import { Link, NavLink } from "react-router";
+import { Link, NavLink, useNavigate } from "react-router";
 import { FiMenu } from "react-icons/fi";
 import CloseButton from "../../common/CloseButton";
 import { useMobileMenuContext } from "../../context/MobileMenuContext";
@@ -6,7 +6,12 @@ import { CiLogout } from "react-icons/ci";
 
 const Header = ({ navLinks }) => {
   const { isMobMenuOpen, setIsMobMenuOpen } = useMobileMenuContext();
+  const navigate = useNavigate();
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
   return (
     <header
       className="fixed z-50 left-0 top-0 w-full h-[72px] bg-white shadow-lg"
@@ -38,14 +43,20 @@ const Header = ({ navLinks }) => {
           </nav>
 
           <div className="hidden lg:block">
-            <button className="bg-gradient-to-bl from-green-400 to-green-800 hover:from-green-800 hover:to-green-400 px-5 py-2 rounded-xl text-white cursor-pointer font-semibold duration-200 transition-colors">
+            <button
+              onClick={handleLogout}
+              className="bg-gradient-to-bl from-green-400 to-green-800 hover:from-green-800 hover:to-green-400 px-5 py-2 rounded-xl text-white cursor-pointer font-semibold duration-200 transition-colors"
+            >
               تسجيل الخروج
             </button>
           </div>
 
           {/* Mobile Menu Controls */}
           <div className="lg:hidden flex items-center gap-3">
-            <button className="bg-gradient-to-bl from-green-400 to-green-800 hover:from-green-800 hover:to-green-400 p-2 rounded-xl text-white cursor-pointer font-semibold duration-200 transition-colors">
+            <button
+              onClick={handleLogout}
+              className="bg-gradient-to-bl from-green-400 to-green-800 hover:from-green-800 hover:to-green-400 p-2 rounded-xl text-white cursor-pointer font-semibold duration-200 transition-colors"
+            >
               <CiLogout size={22} />
             </button>
 
