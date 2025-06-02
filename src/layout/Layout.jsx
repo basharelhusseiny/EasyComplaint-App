@@ -7,8 +7,9 @@ const Layout = () => {
   const navLinks = [
     { id: 1, link: "الصفحة الرئيسية", path: "/" },
     { id: 2, link: "إدارة أنواع الشكاوي", path: "/complaint-types" },
-    { id: 3, link: "إدارة المستخدمين", path: "/users" },
-    { id: 4, link: "للتواصل معنا", path: "/contactUs" },
+    { id: 3, link: "إدارة المستخدمين", path: "/UserManagement" },
+    { id: 4, link: "إنشاء حساب جديد", path: "/signUpPage" },
+    { id: 5, link: "للتواصل معنا", path: "/contactUs" },
   ];
 
   return (

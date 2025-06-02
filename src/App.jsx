@@ -5,6 +5,8 @@ import MobileMenuProvider from "./context/MobileMenuContext";
 import LoginPage from "./components/LoginPage/LoginPage";
 import RegisterPage from "./components/RegisterPage/RegisterPage";
 import ProtectedRoute from "./components/ProtectedRoute";
+import SignUpPage from "./pages/SignUpPage";
+import UserManagement from "./pages/UserManagement";
 
 const App = () => {
   const router = createBrowserRouter([
@@ -15,7 +17,11 @@ const App = () => {
           <Layout />
         </ProtectedRoute>
       ),
-      children: [{ path: "/", element: <Home /> }],
+      children: [
+        { path: "/", element: <Home /> },
+        { path: "/signUpPage", element: <SignUpPage /> },
+        { path: "/userManagement", element: <UserManagement /> },
+      ],
     },
     { path: "/login", element: <LoginPage /> },
     { path: "/register", element: <RegisterPage /> },

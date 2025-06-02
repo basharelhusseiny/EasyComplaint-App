@@ -56,19 +56,19 @@ const RegisterPage = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen px-5 bg-gray-100">
-      <div class="bg-white p-8 rounded-lg shadow-2xl w-full max-w-md">
+      <div className="bg-white p-8 rounded-lg shadow-2xl w-full max-w-md">
         {/* <!-- Title --> */}
-        <h1 class="text-2xl font-bold text-green-600 text-center mb-6">
+        <h1 className="text-2xl font-bold text-green-600 text-center mb-6">
           انشاء حساب
         </h1>
 
         {/* <!-- Form Fields --> */}
-        <form class="space-y-4" onSubmit={handleRegister}>
+        <form className="space-y-4" onSubmit={handleRegister}>
           {/* <!-- Username --> */}
           <div>
             <label
               for="username"
-              class="block text-sm  font-bold text-gray-700 mb-1"
+              className="block text-sm  font-bold text-gray-700 mb-1"
             >
               اسم المستخدم
             </label>
@@ -77,7 +77,7 @@ const RegisterPage = () => {
               id="username"
               value={fullName}
               onChange={(e) => setFullname(e.target.value)}
-              class="w-full p-2 border border-gray-300 rounded-md placeholder:text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full p-2 border border-gray-300 rounded-md placeholder:text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
               placeholder="أدخل الاسم بالكامل"
               required
             />
@@ -87,7 +87,7 @@ const RegisterPage = () => {
           <div>
             <label
               for="email"
-              class="block text-sm  font-bold text-gray-700 mb-1"
+              className="block text-sm  font-bold text-gray-700 mb-1"
             >
               البريد الالكتروني
             </label>
@@ -96,7 +96,7 @@ const RegisterPage = () => {
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              class="w-full p-2 border border-gray-300 rounded-md placeholder:text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full p-2 border border-gray-300 rounded-md placeholder:text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
               placeholder="أدخل البريد الالكتروني"
               required
             />
@@ -106,7 +106,7 @@ const RegisterPage = () => {
           <div>
             <label
               for="password"
-              class="block text-sm  font-bold text-gray-700 mb-1"
+              className="block text-sm  font-bold text-gray-700 mb-1"
             >
               كلمه السر
             </label>
@@ -115,7 +115,7 @@ const RegisterPage = () => {
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              class="w-full p-2 border border-gray-300 rounded-md placeholder:text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full p-2 border border-gray-300 rounded-md placeholder:text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
               placeholder="أدخل كلمه السر"
               required
             />
@@ -124,17 +124,17 @@ const RegisterPage = () => {
           <div>
             <label
               for="password"
-              class="block text-sm  font-bold text-gray-700 mb-1"
+              className="block text-sm  font-bold text-gray-700 mb-1"
             >
               تاكيد كلمه السر
             </label>
-            <div class="relative">
+            <div className="relative">
               <input
                 type="password"
                 id="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                class="w-full p-2 border border-gray-300 rounded-md placeholder:text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full p-2 border border-gray-300 rounded-md placeholder:text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
                 placeholder="تاكيد كلمة السر"
                 required
               />
@@ -149,7 +149,7 @@ const RegisterPage = () => {
           {/* <!-- Login Button --> */}
           <button
             disabled={loading}
-            class="disabled:opacity-50 w-full py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition duration-200"
+            className="disabled:opacity-50 w-full py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition duration-200"
           >
             {loading ? "جاري التسجيل..." : "إنشاء الحساب"}
           </button>

@@ -65,7 +65,7 @@ const LoginPage = () => {
         </div>
 
         {/* Login Form*/}
-        <div className="bg-white/10 backdrop-blur-sm p-8 rounded-lg w-full max-w-md mx-auto md:mx-0">
+        <div className="bg-white/20 backdrop-blur-sm p-8 rounded-lg w-full max-w-md mx-auto md:mx-0">
           <h2 className="text-white text-2xl font-bold mb-6 text-center">
             تسجيل الدخول
           </h2>
