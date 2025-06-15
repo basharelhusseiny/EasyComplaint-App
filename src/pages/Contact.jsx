@@ -54,7 +54,7 @@ const Contact = () => {
       setTitle("");
       setDescription("");
       setSelectedTypeId("");
-      navigate("/ListOfComplaints");
+      navigate("/listOfComplaints");
     } catch (err) {
       console.log("خطأ أثناء إرسال الشكوى:", err.response?.data || err.message);
     }
