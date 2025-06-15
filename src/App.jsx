@@ -10,7 +10,7 @@ import UserManagement from "./pages/UserManagement";
 import ComplaintTypesManager from "./pages/ComplaintTypesManager";
 import ComplaintDetails from "./pages/ComplaintDetails";
 import Contact from "./pages/Contact";
-import ListOfComplaints from "./pages/listOfComplaints";
+import ListOfComplaints from "./pages/ListOfComplaints";
 import ComplaintIdProvider from "./context/ComplaintIdContext";
 import ForgetPassword from "./pages/ForgetPassword";
 import EditSignUp from "./pages/EditSignUp";
