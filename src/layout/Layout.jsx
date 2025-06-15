@@ -2,15 +2,62 @@ import { Outlet } from "react-router";
 import Header from "../components/Header/Header";
 import Footer from "../components/Footer/Footer";
 import MobileMenu from "../components/Header/MobileMenu";
+import { jwtDecode } from "jwt-decode";
 
 const Layout = () => {
-  const navLinks = [
+  const token = localStorage.getItem("token");
+  const decoded = jwtDecode(token);
+  const role =
+    decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+
+  console.log("User Role:", role);
+
+  const allNavLinks = [
     { id: 1, link: "الصفحة الرئيسية", path: "/" },
-    { id: 2, link: "إدارة أنواع الشكاوي", path: "/complaint-types" },
-    { id: 3, link: "إدارة المستخدمين", path: "/UserManagement" },
-    { id: 4, link: "إنشاء حساب جديد", path: "/signUpPage" },
-    { id: 5, link: "للتواصل معنا", path: "/contactUs" },
+    {
+      id: 2,
+      link: "إدارة أنواع الشكاوي",
+      path: "/complaintTypesManager",
+      roles: ["Admin"],
+    },
+    {
+      id: 3,
+      link: "إدارة المستخدمين",
+      path: "/UserManagement",
+      roles: ["Admin"],
+    },
+    {
+      id: 4,
+      link: "إنشاء حساب جديد",
+      path: "/signUpPage",
+      roles: ["Admin", "Complainer"],
+    },
+    {
+      id: 5,
+      link: "تعديل الحساب",
+      path: "/editSignUp",
+    },
+    {
+      id: 6,
+      link: "تفاصيل الشكوي",
+      path: "/complaintDetails",
+    },
+    {
+      id: 7,
+      link: "قائمة الشكاوي",
+      path: "/listOfComplaints",
+    },
+    {
+      id: 8,
+      link: "تواصل معنا",
+      path: "/contact",
+      roles: ["Admin", "Complainer"],
+    },
   ];
+
+  const navLinks = allNavLinks.filter((link) =>
+    link.roles ? link.roles.includes(role) : true
+  );
 
   return (
     <div className="min-h-screen flex flex-col">

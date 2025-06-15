@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 
 const SignUpPage = () => {
-  const token = localStorage.getItem("token"); // أو الاسم اللي خزّنت بيه التوكن
+  const token = localStorage.getItem("token");
   const bearerToken = `Bearer ${token}`;
 
   const [fullName, setFullname] = useState("");
@@ -14,14 +14,6 @@ const SignUpPage = () => {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
-
-  console.log({
-    fullName,
-    email,
-    password,
-    departmentId,
-    roleName,
-  });
 
   useEffect(() => {
     const fetchDepartments = async () => {
@@ -62,7 +54,7 @@ const SignUpPage = () => {
         }
       );
 
-      setSuccessMsg("تم التسجيل بنجاح!.");
+      setSuccessMsg("تم التسجيل بنجاح!");
       setErrorMsg("");
       setFullname("");
       setEmail("");
@@ -153,7 +145,8 @@ const SignUpPage = () => {
             >
               <option value="">اختر الدور</option>
               <option value="admin">مدير</option>
-              <option value="user">مستخدم</option>
+              <option value="complainer">مشتكي</option>
+              <option value="employee">موظف</option>
             </select>
           </div>
           {/* القسم */}

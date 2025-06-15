@@ -2,36 +2,107 @@ import { createBrowserRouter, RouterProvider } from "react-router";
 import Layout from "./layout/Layout";
 import Home from "./pages/Home";
 import MobileMenuProvider from "./context/MobileMenuContext";
-import LoginPage from "./components/LoginPage/LoginPage";
-import RegisterPage from "./components/RegisterPage/RegisterPage";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import SignUpPage from "./pages/SignUpPage";
 import UserManagement from "./pages/UserManagement";
+import ComplaintTypesManager from "./pages/ComplaintTypesManager";
+import ComplaintDetails from "./pages/ComplaintDetails";
+import Contact from "./pages/Contact";
+import ListOfComplaints from "./pages/listOfComplaints";
+import ComplaintIdProvider from "./context/ComplaintIdContext";
+import ForgetPassword from "./pages/ForgetPassword";
+import EditSignUp from "./pages/EditSignUp";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: (
+      <ProtectedRoute>
+        <Layout />
+      </ProtectedRoute>
+    ),
+    children: [
+      { path: "/", element: <Home /> },
+      {
+        path: "/signUpPage",
+        element: (
+          <ProtectedRoute allowedRoles={["Admin", "Complainer"]}>
+            <SignUpPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/userManagement",
+        element: (
+          <ProtectedRoute allowedRoles={["Admin"]}>
+            <UserManagement />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/complaintTypesManager",
+        element: (
+          <ProtectedRoute allowedRoles={["Admin"]}>
+            <ComplaintTypesManager />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/complaintDetails",
+        element: (
+          <ProtectedRoute allowedRoles={["Admin", "Complainer", "Employee"]}>
+            <ComplaintDetails />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/listOfComplaints",
+        element: (
+          <ProtectedRoute allowedRoles={["Admin", "Complainer", "Employee"]}>
+            <ListOfComplaints />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/editSignUp",
+        element: (
+          <ProtectedRoute allowedRoles={["Admin", "Complainer", "Employee"]}>
+            <EditSignUp />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/contact",
+        element: (
+          <ProtectedRoute allowedRoles={["Admin", "Complainer"]}>
+            <Contact />
+          </ProtectedRoute>
+        ),
+      },
+    ],
+  },
+  { path: "/login", element: <LoginPage /> },
+  { path: "/register", element: <RegisterPage /> },
+  { path: "/forgetPassword", element: <ForgetPassword /> },
+  {
+    path: "/unauthorized",
+    element: (
+      <div className="flex justify-center items-center h-screen text-red-600 text-xl">
+        ليس لديك صلاحية للوصول إلى هذه الصفحة.
+      </div>
+    ),
+  },
+]);
 
 const App = () => {
-  const router = createBrowserRouter([
-    {
-      path: "/",
-      element: (
-        <ProtectedRoute>
-          <Layout />
-        </ProtectedRoute>
-      ),
-      children: [
-        { path: "/", element: <Home /> },
-        { path: "/signUpPage", element: <SignUpPage /> },
-        { path: "/userManagement", element: <UserManagement /> },
-      ],
-    },
-    { path: "/login", element: <LoginPage /> },
-    { path: "/register", element: <RegisterPage /> },
-  ]);
   return (
-    <>
-      <MobileMenuProvider>
+    <MobileMenuProvider>
+      <ComplaintIdProvider>
         <RouterProvider router={router} />
-      </MobileMenuProvider>
-    </>
+      </ComplaintIdProvider>
+    </MobileMenuProvider>
   );
 };
 

@@ -7,6 +7,7 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [role, setRole] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const navigate = useNavigate();
@@ -25,6 +26,7 @@ const LoginPage = () => {
         {
           email,
           password,
+          role,
         }
       );
 
@@ -32,7 +34,7 @@ const LoginPage = () => {
         localStorage.setItem("token", response.data.token);
       }
 
-      setSuccessMsg("تم التسجيل بنجاح!.");
+      setSuccessMsg("تم التسجيل بنجاح!");
       setErrorMsg("");
       setEmail("");
       setPassword("");
@@ -93,9 +95,63 @@ const LoginPage = () => {
               />
             </div>
 
+            {/* Radio role */}
+            <div>
+              <div className="flex justify-around gap-2">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    id="Employee"
+                    name="role"
+                    value="Employee"
+                    className="accent-green-500"
+                    onChange={(e) => setRole(e.target.value)}
+                  />
+                  <label
+                    htmlFor="Employee"
+                    className="text-white hover:text-green-500 cursor-pointer duration-300"
+                  >
+                    موظف
+                  </label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    id="Complainer"
+                    name="role"
+                    value="Complainer"
+                    className="accent-green-500"
+                    onChange={(e) => setRole(e.target.value)}
+                  />
+                  <label
+                    htmlFor="Complainer"
+                    className="text-white hover:text-green-500 cursor-pointer duration-300"
+                  >
+                    مشتكي
+                  </label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    id="admin"
+                    name="role"
+                    value="Admin"
+                    className="accent-green-500"
+                    onChange={(e) => setRole(e.target.value)}
+                  />
+                  <label
+                    htmlFor="admin"
+                    className="text-white hover:text-green-500 cursor-pointer duration-300"
+                  >
+                    مدير
+                  </label>
+                </div>
+              </div>
+            </div>
+
             <div className="text-right">
               <Link
-                to="/forgot-password"
+                to="/forgetPassword"
                 className="text-white hover:text-green-500 duration-200 text-sm"
               >
                 هل نسيت كلمة السر؟

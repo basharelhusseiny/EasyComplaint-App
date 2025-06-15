@@ -67,7 +67,7 @@ const RegisterPage = () => {
           {/* <!-- Username --> */}
           <div>
             <label
-              for="username"
+              htmlFor="username"
               className="block text-sm  font-bold text-gray-700 mb-1"
             >
               اسم المستخدم
@@ -86,7 +86,7 @@ const RegisterPage = () => {
           {/* <!-- email --> */}
           <div>
             <label
-              for="email"
+              htmlFor="email"
               className="block text-sm  font-bold text-gray-700 mb-1"
             >
               البريد الالكتروني
@@ -105,7 +105,7 @@ const RegisterPage = () => {
           {/* <!-- Password --> */}
           <div>
             <label
-              for="password"
+              htmlFor="password"
               className="block text-sm  font-bold text-gray-700 mb-1"
             >
               كلمه السر
@@ -123,7 +123,7 @@ const RegisterPage = () => {
 
           <div>
             <label
-              for="password"
+              htmlFor="confirmPassword"
               className="block text-sm  font-bold text-gray-700 mb-1"
             >
               تاكيد كلمه السر
@@ -131,7 +131,7 @@ const RegisterPage = () => {
             <div className="relative">
               <input
                 type="password"
-                id="password"
+                id="confirmPassword"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 className="w-full p-2 border border-gray-300 rounded-md placeholder:text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
