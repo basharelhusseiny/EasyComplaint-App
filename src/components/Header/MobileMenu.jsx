@@ -41,7 +41,7 @@ const MobileMenu = ({ navLinks }) => {
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className={`absolute right-0 h-full bg-white w-[280px] duration-500 transition-transform ${
+        className={`absolute right-0 h-full bg-white w-[300px] duration-500 transition-transform ${
           isMobMenuOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -53,7 +53,7 @@ const MobileMenu = ({ navLinks }) => {
                 initial="hidden"
                 animate="visible"
                 exit="hidden"
-                className="flex flex-col items-center justify-center gap-8"
+                className="flex flex-col items-center justify-center gap-5"
               >
                 {navLinks.map((link) => (
                   <motion.div key={link.id} variants={itemVariants}>

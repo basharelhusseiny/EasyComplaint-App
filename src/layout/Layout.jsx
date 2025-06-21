@@ -49,9 +49,20 @@ const Layout = () => {
     },
     {
       id: 8,
+      link: "تفاصيل المستخدم",
+      path: "/userDetails",
+      roles: ["Admin"],
+    },
+    {
+      id: 9,
       link: "تواصل معنا",
       path: "/contact",
       roles: ["Admin", "Complainer"],
+    },
+    {
+      id: 10,
+      link: "إداره الاقسام",
+      path: "/DepartmentManagement",
     },
   ];
 

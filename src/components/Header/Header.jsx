@@ -26,7 +26,7 @@ const Header = ({ navLinks }) => {
             </Link>
           </div>
 
-          <nav className="hidden lg:flex items-center gap-5">
+          <nav className="hidden items-center gap-5">
             {navLinks.map((link) => (
               <NavLink
                 key={link.id}
@@ -42,39 +42,41 @@ const Header = ({ navLinks }) => {
             ))}
           </nav>
 
-          <div className="hidden lg:block">
-            <button
-              onClick={handleLogout}
-              className="bg-gradient-to-bl from-green-400 to-green-800 hover:from-green-800 hover:to-green-400 px-5 py-2 rounded-xl text-white cursor-pointer font-semibold duration-200 transition-colors"
-            >
-              تسجيل الخروج
-            </button>
-          </div>
-
-          {/* Mobile Menu Controls */}
-          <div className="lg:hidden flex items-center gap-3">
-            <button
-              onClick={handleLogout}
-              className="bg-gradient-to-bl from-green-400 to-green-800 hover:from-green-800 hover:to-green-400 p-2 rounded-xl text-white cursor-pointer font-semibold duration-200 transition-colors"
-            >
-              <CiLogout size={22} />
-            </button>
-
-            {/* Mobile Menu Toggle */}
-            {isMobMenuOpen ? (
-              <CloseButton
-                onClick={() => setIsMobMenuOpen(false)}
-                isMobMenuOpen={isMobMenuOpen}
-              />
-            ) : (
+          <div className="flex items-center gap-5">
+            <div className="hidden sm:block">
               <button
-                aria-label="menu"
-                onClick={() => setIsMobMenuOpen(!isMobMenuOpen)}
-                className="cursor-pointer hover:text-green-600 duration-300 text-black"
+                onClick={handleLogout}
+                className="bg-gradient-to-bl from-green-400 to-green-800 hover:from-green-800 hover:to-green-400 px-5 py-2 rounded-xl text-white cursor-pointer font-semibold duration-200 transition-colors"
               >
-                <FiMenu size={25} />
+                تسجيل الخروج
               </button>
-            )}
+            </div>
+
+            {/* Mobile Menu Controls */}
+            <div className=" flex items-center gap-3">
+              <button
+                onClick={handleLogout}
+                className="flex sm:hidden bg-gradient-to-bl from-green-400 to-green-800 hover:from-green-800 hover:to-green-400 p-2 rounded-xl text-white cursor-pointer font-semibold duration-200 transition-colors"
+              >
+                <CiLogout size={22} />
+              </button>
+
+              {/* Mobile Menu Toggle */}
+              {isMobMenuOpen ? (
+                <CloseButton
+                  onClick={() => setIsMobMenuOpen(false)}
+                  isMobMenuOpen={isMobMenuOpen}
+                />
+              ) : (
+                <button
+                  aria-label="menu"
+                  onClick={() => setIsMobMenuOpen(!isMobMenuOpen)}
+                  className="cursor-pointer hover:text-green-600 duration-300 text-black"
+                >
+                  <FiMenu size={25} />
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>

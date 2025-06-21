@@ -5,11 +5,10 @@ import { useComplaintIdContext } from "../context/ComplaintIdContext";
 const ComplaintDetails = () => {
   const token = localStorage.getItem("token");
   const bearerToken = `Bearer ${token}`;
-
   const { CompId } = useComplaintIdContext();
   const [commentText, setCommentText] = useState("");
   const [complaint, setComplaint] = useState(null);
-  console.log(CompId);
+
   useEffect(() => {
     const fetchComplaint = async () => {
       try {

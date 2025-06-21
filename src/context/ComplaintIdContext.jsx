@@ -3,7 +3,7 @@ import { createContext, useContext, useState } from "react";
 const ComplaintIdContext = createContext();
 
 const ComplaintIdProvider = ({ children }) => {
-  const [CompId, setCompId] = useState();
+  const [CompId, setCompId] = useState(14);
 
   return (
     <ComplaintIdContext.Provider value={{ CompId, setCompId }}>

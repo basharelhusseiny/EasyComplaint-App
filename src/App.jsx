@@ -14,6 +14,9 @@ import ListOfComplaints from "./pages/ListOfComplaints";
 import ComplaintIdProvider from "./context/ComplaintIdContext";
 import ForgetPassword from "./pages/ForgetPassword";
 import EditSignUp from "./pages/EditSignUp";
+import UserDetails from "./pages/UserDetails";
+import DepartmentManagement from "./pages/DepartmentManagement";
+import RecoverPassword from "./pages/RecoverPassword";
 
 const router = createBrowserRouter([
   {
@@ -81,11 +84,28 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      {
+        path: "/userDetails",
+        element: (
+          <ProtectedRoute allowedRoles={["Admin"]}>
+            <UserDetails />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/DepartmentManagement",
+        element: (
+          <ProtectedRoute allowedRoles={["Admin","Employee"]}>
+            <DepartmentManagement />
+          </ProtectedRoute>
+        ),
+      },
     ],
   },
   { path: "/login", element: <LoginPage /> },
   { path: "/register", element: <RegisterPage /> },
   { path: "/forgetPassword", element: <ForgetPassword /> },
+  { path: "/RecoverPassword", element: <RecoverPassword /> },
   {
     path: "/unauthorized",
     element: (
