@@ -1,19 +1,22 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useComplaintIdContext } from "../context/ComplaintIdContext";
+import { useComplaintIdDetailsContext } from "../context/IdOfComplaintDetails";
 
 const ComplaintDetails = () => {
   const token = localStorage.getItem("token");
   const bearerToken = `Bearer ${token}`;
-  const { CompId } = useComplaintIdContext();
   const [commentText, setCommentText] = useState("");
   const [complaint, setComplaint] = useState(null);
+  const { CompDetailsId, setCompDetailsId } = useComplaintIdDetailsContext();
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [statusLoading, setStatusLoading] = useState(false);
+  const [statusMessage, setStatusMessage] = useState({ text: "", type: "" });
 
   useEffect(() => {
     const fetchComplaint = async () => {
       try {
         const res = await axios.get(
-          `https://complain.runasp.net/api/Complaint/GetComplaintByID?id=${CompId}`,
+          `https://complain.runasp.net/api/Complaint/GetComplaintByID?id=${CompDetailsId}`,
           {
             headers: {
               Authorization: bearerToken,
@@ -21,6 +24,13 @@ const ComplaintDetails = () => {
           }
         );
         setComplaint(res.data);
+
+        // تعيين الحالة المحددة بناءً على حالة الشكوى الحالية
+        if (res.data.status === "InProgress") {
+          setSelectedStatus("1"); // قيد التنفيذ
+        } else if (res.data.status === "Resolved") {
+          setSelectedStatus("4"); // تم الحل
+        }
       } catch (err) {
         console.error(
           "حدث خطأ أثناء جلب الشكاوي:",
@@ -31,13 +41,27 @@ const ComplaintDetails = () => {
 
     fetchComplaint();
   }, []);
+
+  // تحويل حالة الشكوى من الإنجليزية إلى العربية
+  const getArabicStatus = (englishStatus) => {
+    switch (englishStatus) {
+      case "Pending":
+        return "معلق";
+      case "InProgress":
+        return "قيد التنفيذ";
+      case "Resolved":
+        return "تم الحل";
+      default:
+        return englishStatus;
+    }
+  };
+
   const handleComment = async (e) => {
     e.preventDefault();
     try {
       const response = await axios.post(
         "https://complain.runasp.net/api/Comment/Add",
         {
-          complaintID: Number(CompId),
           commentText: commentText,
         },
         {
@@ -55,6 +79,60 @@ const ComplaintDetails = () => {
     }
   };
 
+  // وظيفة تغيير حالة الشكوى
+  const handleChangeStatus = async () => {
+    if (!selectedStatus) return;
+
+    setStatusLoading(true);
+    setStatusMessage({ text: "", type: "" });
+
+    try {
+      await axios.put(
+        "https://complain.runasp.net/api/Complaint/EditStatus",
+        {
+          complaintId: CompDetailsId,
+          status: parseInt(selectedStatus),
+        },
+        {
+          headers: {
+            Authorization: bearerToken,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      // تحديث حالة الشكوى محليًا
+      const updatedComplaint = { ...complaint };
+      if (selectedStatus === "1") {
+        updatedComplaint.status = "InProgress";
+      } else if (selectedStatus === "4") {
+        updatedComplaint.status = "Resolved";
+      }
+      setComplaint(updatedComplaint);
+
+      setStatusMessage({
+        text: "تم تغيير حالة الشكوى بنجاح",
+        type: "success",
+      });
+
+      // إعادة تعيين الحالة المحددة بناءً على الحالة الجديدة
+      if (updatedComplaint.status === "InProgress") {
+        setSelectedStatus("4"); // تم الحل
+      }
+    } catch (err) {
+      console.error(
+        "خطأ أثناء تغيير حالة الشكوى:",
+        err.response?.data || err.message
+      );
+      setStatusMessage({
+        text: err.response?.data?.message || "حدث خطأ أثناء تغيير حالة الشكوى",
+        type: "error",
+      });
+    } finally {
+      setStatusLoading(false);
+    }
+  };
+
   return (
     <div className="bg-gray-100">
       <div className="min-h-screen flex items-center justify-center p-4">
@@ -63,15 +141,77 @@ const ComplaintDetails = () => {
             <h2 className="text-green-700 font-bold text-xl mb-1">
               تفاصيل الشكوى
             </h2>
-            <h3 className="text-gray-800 font-semibold text-lg">
-              {complaint?.complaintTypeName || "عنوان الشكوى"}
-            </h3>
-            <h5 className="text-gray-800 font-semibold text-l">
-              {complaint?.status === "Pending" ? "معلق" : "" || "تصنيف"}
-            </h5>
-            <p className="text-gray-600 text-sm mt-1">
-              {complaint?.description || "وصف الشكوى"}
-            </p>
+            <div className="flex justify-between items-center">
+              <div>
+                <h3 className="text-gray-800 font-semibold text-lg">
+                  {complaint?.complaintTypeName || "عنوان الشكوى"}
+                </h3>
+                <h5 className="text-gray-800 font-semibold text-l">
+                  <span
+                    className={`px-2 py-1 rounded-md text-white text-sm ${
+                      complaint?.status === "Pending"
+                        ? "bg-yellow-600"
+                        : complaint?.status === "InProgress"
+                        ? "bg-blue-600"
+                        : complaint?.status === "Resolved"
+                        ? "bg-green-700"
+                        : "bg-gray-500"
+                    }`}
+                  >
+                    {getArabicStatus(complaint?.status) || "تصنيف"}
+                  </span>
+                </h5>
+                <p className="text-gray-600 text-sm mt-1">
+                  {complaint?.description || "وصف الشكوى"}
+                </p>
+              </div>
+
+              {complaint?.status !== "Resolved" && (
+                <div className="flex flex-col space-y-2">
+                  {statusMessage.text && (
+                    <div
+                      className={`text-xs p-1 rounded ${
+                        statusMessage.type === "success"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-red-100 text-red-700"
+                      }`}
+                    >
+                      {statusMessage.text}
+                    </div>
+                  )}
+                  <div className="flex items-center space-x-2">
+                    <select
+                      value={selectedStatus}
+                      onChange={(e) => setSelectedStatus(e.target.value)}
+                      className="border border-gray-300 rounded-md p-1 text-sm focus:outline-none focus:ring-2 focus:ring-green-600"
+                      disabled={statusLoading}
+                    >
+                      <option value="" disabled>
+                        اختر الحالة
+                      </option>
+                      {complaint?.status === "Pending" && (
+                        <option value="1">قيد التنفيذ</option>
+                      )}
+                      {(complaint?.status === "Pending" ||
+                        complaint?.status === "InProgress") && (
+                        <option value="4">تم الحل</option>
+                      )}
+                    </select>
+                    <button
+                      onClick={handleChangeStatus}
+                      disabled={!selectedStatus || statusLoading}
+                      className={`px-3 py-1 rounded-md text-white text-sm ${
+                        !selectedStatus || statusLoading
+                          ? "bg-gray-400"
+                          : "bg-green-600 hover:bg-green-700"
+                      }`}
+                    >
+                      {statusLoading ? "جاري..." : "تغيير"}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           <form onSubmit={handleComment} className="my-6">

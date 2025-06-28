@@ -1,11 +1,12 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { useComplaintIdContext } from "../context/ComplaintIdContext";
+import { useComplaintIdDetailsContext } from "../context/IdOfComplaintDetails";
 
 const ListOfComplaints = () => {
   const token = localStorage.getItem("token");
   const bearerToken = `Bearer ${token}`;
+  const { CompDetailsId, setCompDetailsId } = useComplaintIdDetailsContext();
   const [complaints, setComplaints] = useState([]);
   const [pagination, setPagination] = useState({
     count: 0,
@@ -14,20 +15,46 @@ const ListOfComplaints = () => {
     hasNextPage: false,
     hasPreviousPage: false,
   });
-  const { setCompId } = useComplaintIdContext();
   const [activeStatus, setActiveStatus] = useState("معلق");
   const [loading, setLoading] = useState(false);
-  const [pageNumber, setPageNumber] = useState(1); // حالة جديدة لتتبع رقم الصفحة
+  const [pageNumber, setPageNumber] = useState(1);
   const navigate = useNavigate();
+
+  // تحويل حالة الشكوى من الإنجليزية إلى العربية
+  const getArabicStatus = (englishStatus) => {
+    switch (englishStatus) {
+      case "Pending":
+        return "معلق";
+      case "InProgress":
+        return "قيد التنفيذ";
+      case "Resolved":
+        return "تم الحل";
+      default:
+        return englishStatus;
+    }
+  };
+
+  // تحويل الحالة العربية إلى الإنجليزية للتصفية
+  const getEnglishStatus = (arabicStatus) => {
+    switch (arabicStatus) {
+      case "معلق":
+        return "Pending";
+      case "قيد التنفيذ":
+        return "InProgress";
+      case "تم الحل":
+        return "Resolved";
+      default:
+        return arabicStatus;
+    }
+  };
 
   const fetchComplaints = async (page) => {
     setLoading(true);
     try {
       console.log(`جاري جلب الصفحة ${page}...`);
 
-      const timestamp = new Date().getTime();
       const response = await axios.get(
-        `https://complain.runasp.net/api/Complaint/MyComplaints?page=${page}&_=${timestamp}`,
+        `https://complain.runasp.net/api/Complaint/MyComplaints`,
         {
           headers: {
             Authorization: bearerToken,
@@ -53,7 +80,7 @@ const ListOfComplaints = () => {
       setLoading(false);
     }
   };
-
+  
   // استدعاء API عند تغيير رقم الصفحة
   useEffect(() => {
     fetchComplaints(pageNumber);
@@ -68,23 +95,28 @@ const ListOfComplaints = () => {
 
   // الانتقال إلى الصفحة التالية
   const goToNextPage = () => {
-    console.log("محاولة الانتقال للصفحة التالية");
-    console.log("الصفحة الحالية:", pageNumber);
-    console.log("إجمالي الصفحات:", pagination.totalPages);
-
     if (pageNumber < pagination.totalPages) {
-      console.log(`الانتقال إلى الصفحة ${pageNumber + 1}`);
       setPageNumber(pageNumber + 1);
     }
   };
 
   // الانتقال إلى الصفحة السابقة
   const goToPreviousPage = () => {
-    console.log("محاولة الانتقال للصفحة السابقة");
     if (pageNumber > 1) {
-      console.log(`الانتقال إلى الصفحة ${pageNumber - 1}`);
       setPageNumber(pageNumber - 1);
     }
+  };
+
+  // تصفية الشكاوى حسب الحالة
+  const filteredComplaints = complaints.filter(
+    (comp) => getArabicStatus(comp.status) === activeStatus
+  );
+
+  // حساب عدد الشكاوى لكل حالة
+  const countByStatus = {
+    "معلق": complaints.filter(comp => getArabicStatus(comp.status) === "معلق").length,
+    "قيد التنفيذ": complaints.filter(comp => getArabicStatus(comp.status) === "قيد التنفيذ").length,
+    "تم الحل": complaints.filter(comp => getArabicStatus(comp.status) === "تم الحل").length
   };
 
   return (
@@ -107,7 +139,7 @@ const ListOfComplaints = () => {
                 } px-3 py-1 rounded`}
                 onClick={() => changeStatus("معلق")}
               >
-                معلق ({pagination.count})
+                معلق ({countByStatus["معلق"]})
               </button>
               <button
                 className={`${
@@ -117,7 +149,7 @@ const ListOfComplaints = () => {
                 } px-3 py-1 rounded`}
                 onClick={() => changeStatus("قيد التنفيذ")}
               >
-                قيد التنفيذ ({pagination.count})
+                قيد التنفيذ ({countByStatus["قيد التنفيذ"]})
               </button>
               <button
                 className={`${
@@ -127,7 +159,7 @@ const ListOfComplaints = () => {
                 } px-3 py-1 rounded`}
                 onClick={() => changeStatus("تم الحل")}
               >
-                تم الحل ({pagination.count})
+                تم الحل ({countByStatus["تم الحل"]})
               </button>
             </div>
           </div>
@@ -138,8 +170,8 @@ const ListOfComplaints = () => {
               <div className="text-center py-8 text-gray-500">
                 جاري تحميل الشكاوى...
               </div>
-            ) : complaints.length > 0 ? (
-              complaints.map((comp) => (
+            ) : filteredComplaints.length > 0 ? (
+              filteredComplaints.map((comp) => (
                 <div
                   key={comp.id}
                   className="flex justify-between items-center border p-4 rounded-lg shadow-sm"
@@ -147,8 +179,8 @@ const ListOfComplaints = () => {
                   <div>
                     <h2
                       onClick={() => {
-                        setCompId(comp.id);
                         navigate("/complaintDetails");
+                        setCompDetailsId(comp.id);
                       }}
                       className="text-lg font-semibold text-gray-800 hover:text-green-600 cursor-pointer duration-200"
                     >
@@ -171,7 +203,7 @@ const ListOfComplaints = () => {
               ))
             ) : (
               <div className="text-center py-8 text-gray-500">
-                لا توجد شكاوى متاحة
+                لا توجد شكاوى {activeStatus}
               </div>
             )}
           </div>

@@ -30,7 +30,7 @@ const Layout = () => {
       id: 4,
       link: "إنشاء حساب جديد",
       path: "/signUpPage",
-      roles: ["Admin", "Complainer"],
+      roles: ["Admin"],
     },
     {
       id: 5,
@@ -63,6 +63,7 @@ const Layout = () => {
       id: 10,
       link: "إداره الاقسام",
       path: "/DepartmentManagement",
+      roles: ["Admin"],
     },
   ];
 

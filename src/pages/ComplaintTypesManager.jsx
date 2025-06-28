@@ -1,5 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
+import { useComplaintIdContext } from "../context/ComplaintIdContext";
 
 const ComplaintTypesManager = () => {
   const token = localStorage.getItem("token");
@@ -8,6 +10,8 @@ const ComplaintTypesManager = () => {
   const [departmentId, setDepartmentId] = useState("");
   const [complaintType, setComplaintType] = useState([]);
   const [typeName, setTypeName] = useState("");
+  const navigate = useNavigate();
+  const { CompId, setCompId } = useComplaintIdContext();
 
   const fetchComplaintType = async () => {
     try {
@@ -24,6 +28,7 @@ const ComplaintTypesManager = () => {
       console.log("خطأ في جلب أنواع الشكاوى:", err);
     }
   };
+  console.log(complaintType);
 
   useEffect(() => {
     const fetchDepartments = async () => {
@@ -174,7 +179,13 @@ const ComplaintTypesManager = () => {
                         <button className="px-2 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition duration-200">
                           حذف
                         </button>
-                        <button className="px-2 py-1 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition duration-200">
+                        <button
+                          onClick={() => {
+                            setCompId(comp.id);
+                            navigate("/userDetails");
+                          }}
+                          className="px-2 py-1 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition duration-200"
+                        >
                           التفاصيل
                         </button>
                       </div>

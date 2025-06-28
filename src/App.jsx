@@ -12,11 +12,13 @@ import ComplaintDetails from "./pages/ComplaintDetails";
 import Contact from "./pages/Contact";
 import ListOfComplaints from "./pages/ListOfComplaints";
 import ComplaintIdProvider from "./context/ComplaintIdContext";
+import IdOfComplaintDetailsProvider from "./context/IdOfComplaintDetails";
 import ForgetPassword from "./pages/ForgetPassword";
 import EditSignUp from "./pages/EditSignUp";
 import UserDetails from "./pages/UserDetails";
 import DepartmentManagement from "./pages/DepartmentManagement";
 import RecoverPassword from "./pages/RecoverPassword";
+import AddWorkflow from "./pages/AddWorkflow";
 
 const router = createBrowserRouter([
   {
@@ -95,8 +97,16 @@ const router = createBrowserRouter([
       {
         path: "/DepartmentManagement",
         element: (
-          <ProtectedRoute allowedRoles={["Admin","Employee"]}>
+          <ProtectedRoute allowedRoles={["Admin", "Employee"]}>
             <DepartmentManagement />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/AddUser",
+        element: (
+          <ProtectedRoute allowedRoles={["Admin", "Employee"]}>
+            <AddWorkflow />
           </ProtectedRoute>
         ),
       },
@@ -118,11 +128,13 @@ const router = createBrowserRouter([
 
 const App = () => {
   return (
-    <MobileMenuProvider>
-      <ComplaintIdProvider>
-        <RouterProvider router={router} />
-      </ComplaintIdProvider>
-    </MobileMenuProvider>
+    <IdOfComplaintDetailsProvider>
+      <MobileMenuProvider>
+        <ComplaintIdProvider>
+          <RouterProvider router={router} />
+        </ComplaintIdProvider>
+      </MobileMenuProvider>
+    </IdOfComplaintDetailsProvider>
   );
 };
 
