@@ -19,6 +19,7 @@ import UserDetails from "./pages/UserDetails";
 import DepartmentManagement from "./pages/DepartmentManagement";
 import RecoverPassword from "./pages/RecoverPassword";
 import AddWorkflow from "./pages/AddWorkflow";
+import ChangePassword from "./pages/ChangePassword";
 
 const router = createBrowserRouter([
   {
@@ -33,7 +34,7 @@ const router = createBrowserRouter([
       {
         path: "/signUpPage",
         element: (
-          <ProtectedRoute allowedRoles={["Admin", "Complainer"]}>
+          <ProtectedRoute allowedRoles={["Admin"]}>
             <SignUpPage />
           </ProtectedRoute>
         ),
@@ -57,7 +58,7 @@ const router = createBrowserRouter([
       {
         path: "/complaintDetails",
         element: (
-          <ProtectedRoute allowedRoles={["Admin", "Complainer", "Employee"]}>
+          <ProtectedRoute allowedRoles={["Complainer"]}>
             <ComplaintDetails />
           </ProtectedRoute>
         ),
@@ -65,7 +66,7 @@ const router = createBrowserRouter([
       {
         path: "/listOfComplaints",
         element: (
-          <ProtectedRoute allowedRoles={["Admin", "Complainer", "Employee"]}>
+          <ProtectedRoute allowedRoles={["Complainer"]}>
             <ListOfComplaints />
           </ProtectedRoute>
         ),
@@ -81,7 +82,7 @@ const router = createBrowserRouter([
       {
         path: "/contact",
         element: (
-          <ProtectedRoute allowedRoles={["Admin", "Complainer"]}>
+          <ProtectedRoute allowedRoles={["Complainer"]}>
             <Contact />
           </ProtectedRoute>
         ),
@@ -97,7 +98,7 @@ const router = createBrowserRouter([
       {
         path: "/DepartmentManagement",
         element: (
-          <ProtectedRoute allowedRoles={["Admin", "Employee"]}>
+          <ProtectedRoute allowedRoles={["Admin"]}>
             <DepartmentManagement />
           </ProtectedRoute>
         ),
@@ -107,6 +108,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute allowedRoles={["Admin", "Employee"]}>
             <AddWorkflow />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/changePassword",
+        element: (
+          <ProtectedRoute allowedRoles={["Admin", "Complainer", "Employee"]}>
+            <ChangePassword />
           </ProtectedRoute>
         ),
       },

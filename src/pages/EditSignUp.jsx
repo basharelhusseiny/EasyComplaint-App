@@ -1,12 +1,11 @@
 import axios from "axios";
-import { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router";
+import { useEffect, useState } from "react";
+import { useNavigate, Link } from "react-router";
 
 const EditSignUp = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const bearerToken = `Bearer ${token}`;
-  const fileInputRef = useRef(null);
 
   // حالات البيانات
   const [userData, setUserData] = useState({
@@ -14,19 +13,7 @@ const EditSignUp = () => {
     email: "",
     phoneNumber: "",
     address: "",
-    profileImage: "",
   });
-
-  // حالات كلمة المرور
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [changePassword, setChangePassword] = useState(false);
-
-  // حالات الصورة
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [previewImage, setPreviewImage] = useState(null);
-  const [uploadingImage, setUploadingImage] = useState(false);
-  const [imageMessage, setImageMessage] = useState({ text: "", type: "" });
 
   // حالات التحميل والرسائل
   const [loading, setLoading] = useState(false);
@@ -53,13 +40,7 @@ const EditSignUp = () => {
         email: profile.email || "",
         phoneNumber: profile.phoneNumber || "",
         address: profile.address || "",
-        profileImage: profile.profileImage || "",
       });
-
-      // تعيين صورة المعاينة إذا كانت موجودة
-      if (profile.profileImage) {
-        setPreviewImage(profile.profileImage);
-      }
 
       setInitialDataLoaded(true);
       console.log("تم جلب بيانات المستخدم بنجاح:", profile);
@@ -96,98 +77,6 @@ const EditSignUp = () => {
     }));
   };
 
-  // معالجة اختيار الصورة
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    // التحقق من نوع الملف
-    const validTypes = ["image/jpeg", "image/png", "image/jpg"];
-    if (!validTypes.includes(file.type)) {
-      setImageMessage({
-        text: "يرجى اختيار صورة بتنسيق JPG أو PNG فقط",
-        type: "error",
-      });
-      return;
-    }
-
-    // التحقق من حجم الملف (أقل من 5 ميجابايت)
-    if (file.size > 5 * 1024 * 1024) {
-      setImageMessage({
-        text: "حجم الصورة يجب أن يكون أقل من 5 ميجابايت",
-        type: "error",
-      });
-      return;
-    }
-
-    setSelectedImage(file);
-    setImageMessage({ text: "", type: "" });
-
-    // إنشاء معاينة للصورة
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setPreviewImage(reader.result);
-    };
-    reader.readAsDataURL(file);
-  };
-
-  // رفع الصورة
-  const handleUploadImage = async () => {
-    if (!selectedImage) {
-      setImageMessage({
-        text: "يرجى اختيار صورة أولاً",
-        type: "error",
-      });
-      return;
-    }
-
-    setUploadingImage(true);
-    setImageMessage({ text: "", type: "" });
-
-    try {
-      const formData = new FormData();
-      formData.append("profileImage", selectedImage);
-
-      const response = await axios.post(
-        "https://complain.runasp.net/api/Account/upload-image-Profile",
-        formData,
-        {
-          headers: {
-            Authorization: bearerToken,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      console.log("تم رفع الصورة بنجاح:", response.data);
-
-      setImageMessage({
-        text: "تم تحديث صورة الملف الشخصي بنجاح",
-        type: "success",
-      });
-
-      // تحديث البيانات المحلية
-      fetchUserData();
-
-      // إعادة تعيين حالة الصورة المحددة
-      setSelectedImage(null);
-    } catch (error) {
-      console.error(
-        "خطأ في رفع الصورة:",
-        error.response?.data || error.message
-      );
-
-      setImageMessage({
-        text:
-          error.response?.data?.message ||
-          "حدث خطأ أثناء رفع الصورة. يرجى المحاولة مرة أخرى.",
-        type: "error",
-      });
-    } finally {
-      setUploadingImage(false);
-    }
-  };
-
   // التحقق من صحة البيانات
   const validateForm = () => {
     // التحقق من الاسم والبريد الإلكتروني
@@ -199,25 +88,6 @@ const EditSignUp = () => {
     if (!userData.email.trim()) {
       setMessage({ text: "يرجى إدخال بريد إلكتروني صحيح", type: "error" });
       return false;
-    }
-
-    // التحقق من كلمة المرور إذا تم تغييرها
-    if (changePassword) {
-      if (password.length < 8) {
-        setMessage({
-          text: "كلمة المرور يجب أن تكون 8 أحرف على الأقل وتحتوي على رقم واحد على الأقل",
-          type: "error",
-        });
-        return false;
-      }
-
-      if (password !== confirmPassword) {
-        setMessage({
-          text: "كلمة المرور وتأكيدها غير متطابقين",
-          type: "error",
-        });
-        return false;
-      }
     }
 
     return true;
@@ -243,12 +113,6 @@ const EditSignUp = () => {
         address: userData.address || null,
       };
 
-      // إضافة كلمة المرور إذا تم تغييرها
-      if (changePassword) {
-        updateData.password = password;
-        updateData.confirmPassword = confirmPassword;
-      }
-
       console.log("بيانات التحديث:", updateData);
 
       // إرسال طلب تحديث البيانات
@@ -269,13 +133,6 @@ const EditSignUp = () => {
         text: "تم تحديث الملف الشخصي بنجاح",
         type: "success",
       });
-
-      // إعادة تعيين حقول كلمة المرور
-      if (changePassword) {
-        setPassword("");
-        setConfirmPassword("");
-        setChangePassword(false);
-      }
 
       // تحديث البيانات المحلية
       fetchUserData();
@@ -304,93 +161,6 @@ const EditSignUp = () => {
         <h1 className="text-2xl font-bold text-green-600 text-center mb-6">
           تعديل الملف الشخصي
         </h1>
-
-        {/* <!-- صورة الملف الشخصي --> */}
-        <div className="mb-6 flex flex-col items-center">
-          <div className="relative mb-4">
-            <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-green-500">
-              {previewImage ? (
-                <img
-                  src={previewImage}
-                  alt="صورة الملف الشخصي"
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                  <span className="text-gray-500 text-xs">لا توجد صورة</span>
-                </div>
-              )}
-            </div>
-            <button
-              type="button"
-              onClick={() => fileInputRef.current.click()}
-              className="absolute bottom-0 right-0 bg-green-600 text-white rounded-full p-1 shadow-md hover:bg-green-700"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                />
-              </svg>
-            </button>
-          </div>
-
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleImageChange}
-            accept="image/jpeg, image/png, image/jpg"
-            className="hidden"
-          />
-
-          {selectedImage && (
-            <div className="flex items-center gap-2 mb-2">
-              <button
-                type="button"
-                onClick={handleUploadImage}
-                disabled={uploadingImage}
-                className={`text-xs py-1 px-3 rounded ${
-                  uploadingImage
-                    ? "bg-gray-400"
-                    : "bg-green-600 hover:bg-green-700"
-                } text-white`}
-              >
-                {uploadingImage ? "جاري الرفع..." : "رفع الصورة"}
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setSelectedImage(null);
-                  setPreviewImage(userData.profileImage || null);
-                  setImageMessage({ text: "", type: "" });
-                }}
-                className="text-xs py-1 px-3 rounded bg-gray-500 hover:bg-gray-600 text-white"
-              >
-                إلغاء
-              </button>
-            </div>
-          )}
-
-          {imageMessage.text && (
-            <div
-              className={`text-xs p-2 rounded mt-2 ${
-                imageMessage.type === "success"
-                  ? "bg-green-100 text-green-700"
-                  : "bg-red-100 text-red-700"
-              }`}
-            >
-              {imageMessage.text}
-            </div>
-          )}
-        </div>
 
         {/* <!-- Status Message --> */}
         {message.text && (
@@ -426,7 +196,7 @@ const EditSignUp = () => {
             />
           </div>
 
-          {/* <!-- email --> */}
+          {/* <!-- Email --> */}
           <div>
             <label
               htmlFor="email"
@@ -445,7 +215,7 @@ const EditSignUp = () => {
             />
           </div>
 
-          {/* <!-- رقم الهاتف --> */}
+          {/* <!-- Phone Number --> */}
           <div>
             <label
               htmlFor="phoneNumber"
@@ -454,17 +224,17 @@ const EditSignUp = () => {
               رقم الهاتف
             </label>
             <input
-              type="text"
+              type="tel"
               id="phoneNumber"
               value={userData.phoneNumber || ""}
               onChange={handleInputChange}
               className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-              placeholder="أدخل رقم هاتفك"
+              placeholder="أدخل رقم الهاتف"
               disabled={loading || !initialDataLoaded}
             />
           </div>
 
-          {/* <!-- العنوان --> */}
+          {/* <!-- Address --> */}
           <div>
             <label
               htmlFor="address"
@@ -478,74 +248,32 @@ const EditSignUp = () => {
               value={userData.address || ""}
               onChange={handleInputChange}
               className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-              placeholder="أدخل عنوانك"
+              placeholder="أدخل العنوان"
               disabled={loading || !initialDataLoaded}
             />
           </div>
-
-          {/* <!-- تغيير كلمة المرور --> */}
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="change-password"
-              checked={changePassword}
-              onChange={() => setChangePassword(!changePassword)}
-              className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-              disabled={loading || !initialDataLoaded}
-            />
-            <label
-              htmlFor="change-password"
-              className="mr-2 block text-sm text-gray-700"
+          <div className="mb-6 text-center">
+            <Link
+              to="/changePassword"
+              className="text-green-600 hover:text-green-800 transition-colors duration-200 flex items-center justify-center"
             >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 ml-1"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                />
+              </svg>
               تغيير كلمة المرور
-            </label>
+            </Link>
           </div>
-
-          {/* <!-- حقول كلمة المرور (تظهر فقط عند اختيار تغيير كلمة المرور) --> */}
-          {changePassword && (
-            <>
-              {/* <!-- Password --> */}
-              <div>
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  كلمة المرور الجديدة <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="password"
-                  id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                  placeholder="أدخل كلمة المرور الجديدة"
-                  disabled={loading}
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  يجب أن تكون 8 أحرف على الأقل وتحتوي على رقم واحد على الأقل
-                </p>
-              </div>
-
-              {/* <!-- تأكيد كلمة المرور --> */}
-              <div>
-                <label
-                  htmlFor="confirm-password"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  تأكيد كلمة المرور <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="password"
-                  id="confirm-password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                  placeholder="تأكيد كلمة المرور"
-                  disabled={loading}
-                />
-              </div>
-            </>
-          )}
 
           {/* <!-- Submit Button --> */}
           <button

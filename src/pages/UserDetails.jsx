@@ -45,109 +45,12 @@ const UserDetails = () => {
     fetchUsersDetails();
   }, []);
 
-  // وظيفة حذف المستخدم
-  const handleDelete = async (workflowId) => {
-    if (!window.confirm("هل أنت متأكد من حذف هذا المستخدم؟")) {
-      return;
-    }
-
-    setLoading(true);
-    try {
-      await axios.delete(
-        `https://complain.runasp.net/api/Workflow/${workflowId}`,
-        {
-          headers: {
-            Authorization: bearerToken,
-          },
-        }
-      );
-      
-      setMessage({ text: "تم حذف المستخدم بنجاح", type: "success" });
-      
-      // تحديث القائمة بعد الحذف
-      fetchUsersDetails();
-    } catch (err) {
-      console.log("خطأ أثناء حذف المستخدم:", err.response?.data || err.message);
-      setMessage({
-        text: err.response?.data?.message || "حدث خطأ أثناء حذف المستخدم",
-        type: "error",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // وظيفة بدء التعديل
-  const handleEdit = (user) => {
-    setEditMode(true);
-    setEditData({
-      workflowId: user.workflowId,
-      userEmail: user.userEmail
-    });
-  };
-
-  // وظيفة إلغاء التعديل
-  const handleCancelEdit = () => {
-    setEditMode(false);
-    setEditData({
-      workflowId: null,
-      userEmail: ""
-    });
-  };
-
-  // وظيفة تحديث البريد الإلكتروني
-  const handleUpdateEmail = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    
-    try {
-      // استخدام معلمات الاستعلام بدلاً من جسم الطلب
-      const url = `https://complain.runasp.net/api/Workflow/UpdateUser?workflowId=${editData.workflowId}&userEmail=${encodeURIComponent(editData.userEmail)}`;
-      
-      console.log("رابط التحديث:", url);
-      
-      await axios.put(
-        url,
-        {}, // جسم فارغ لأننا نستخدم معلمات الاستعلام
-        {
-          headers: {
-            Authorization: bearerToken,
-            "Content-Type": "application/json"
-          }
-        }
-      );
-      
-      setMessage({ text: "تم تحديث البريد الإلكتروني بنجاح", type: "success" });
-      setEditMode(false);
-      
-      // تحديث القائمة بعد التعديل
-      fetchUsersDetails();
-    } catch (err) {
-      console.log("خطأ أثناء تحديث البريد الإلكتروني:", err.response?.data || err.message);
-      
-      // عرض رسالة الخطأ المحددة من API إذا كانت متوفرة
-      if (err.response?.data?.errors?.userEmail) {
-        setMessage({
-          text: err.response.data.errors.userEmail[0],
-          type: "error"
-        });
-      } else {
-        setMessage({
-          text: err.response?.data?.message || "حدث خطأ أثناء تحديث البريد الإلكتروني",
-          type: "error"
-        });
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
   // وظيفة تبديل البريد الإلكتروني
   const handleSwapEmails = async (e) => {
     e.preventDefault();
     
     if (!swapData.email1 || !swapData.email2) {
-      setMessage({ text: "يرجى إدخال عنواني البريد الإلكتروني", type: "error" });
+      setMessage({ text: "يرجى اختيار المستخدمين للتبديل", type: "error" });
       return;
     }
     
@@ -183,6 +86,106 @@ const UserDetails = () => {
       console.log("خطأ أثناء تبديل البريد الإلكتروني:", err.response?.data || err.message);
       setMessage({
         text: err.response?.data?.message || "حدث خطأ أثناء تبديل البريد الإلكتروني",
+        type: "error"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // وظيفة بدء التعديل
+  const handleEdit = (user) => {
+    setEditMode(true);
+    setEditData({
+      workflowId: user.workflowId,
+      userEmail: user.userEmail
+    });
+    setMessage({ text: "", type: "" });
+  };
+
+  // وظيفة إلغاء التعديل
+  const handleCancelEdit = () => {
+    setEditMode(false);
+    setEditData({
+      workflowId: null,
+      userEmail: ""
+    });
+    setMessage({ text: "", type: "" });
+  };
+
+  // وظيفة تحديث البريد الإلكتروني
+  const handleUpdateEmail = async (e) => {
+    e.preventDefault();
+    
+    if (!editData.userEmail) {
+      setMessage({ text: "يرجى إدخال البريد الإلكتروني الجديد", type: "error" });
+      return;
+    }
+    
+    setLoading(true);
+    
+    try {
+      // استخدام المسار الصحيح مع معلمات الاستعلام
+      await axios.put(
+        `https://complain.runasp.net/api/Workflow/UpdateUser?workflowId=${editData.workflowId}&userEmail=${encodeURIComponent(editData.userEmail)}`,
+        {}, // جسم فارغ لأننا نستخدم معلمات الاستعلام
+        {
+          headers: {
+            Authorization: bearerToken,
+            "Content-Type": "application/json"
+          }
+        }
+      );
+      
+      setMessage({ text: "تم تحديث البريد الإلكتروني بنجاح", type: "success" });
+      
+      // إعادة تعيين وضع التعديل
+      setEditMode(false);
+      setEditData({
+        workflowId: null,
+        userEmail: ""
+      });
+      
+      // تحديث القائمة بعد التعديل
+      fetchUsersDetails();
+    } catch (err) {
+      console.log("خطأ أثناء تحديث البريد الإلكتروني:", err.response?.data || err.message);
+      setMessage({
+        text: err.response?.data?.message || "حدث خطأ أثناء تحديث البريد الإلكتروني",
+        type: "error"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // وظيفة حذف المستخدم
+  const handleDelete = async (workflowId) => {
+    if (!window.confirm("هل أنت متأكد من حذف هذا المستخدم؟")) {
+      return;
+    }
+    
+    setLoading(true);
+    
+    try {
+      // استخدام المسار المباشر للحذف
+      await axios.delete(
+        `https://complain.runasp.net/api/Workflow/${workflowId}`,
+        {
+          headers: {
+            Authorization: bearerToken
+          }
+        }
+      );
+      
+      setMessage({ text: "تم حذف المستخدم بنجاح", type: "success" });
+      
+      // تحديث القائمة بعد الحذف
+      fetchUsersDetails();
+    } catch (err) {
+      console.log("خطأ أثناء حذف المستخدم:", err.response?.data || err.message);
+      setMessage({
+        text: err.response?.data?.message || "حدث خطأ أثناء حذف المستخدم",
         type: "error"
       });
     } finally {
@@ -303,27 +306,52 @@ const UserDetails = () => {
         </div>
         {/* نموذج تبديل البريد الإلكتروني */}
         <div className="mt-8 p-4 border border-gray-200 rounded-md bg-gray-50">
+          <h3 className="text-lg font-semibold text-green-600 mb-3">تبديل المستخدمين</h3>
           <form onSubmit={handleSwapEmails} className="space-y-3">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <input
-                  type="email"
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  المستخدم الأول
+                </label>
+                <select
                   value={swapData.email1}
                   onChange={(e) => setSwapData({...swapData, email1: e.target.value})}
                   className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                  placeholder="أدخل البريد الإلكتروني الأول"
                   required
-                />
+                >
+                  <option value="">اختر المستخدم الأول</option>
+                  {usersDetails && usersDetails.length > 0 ? (
+                    usersDetails.map((user, index) => (
+                      <option key={`user1-${index}`} value={user.userEmail}>
+                        {user.userEmail}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="" disabled>لا يوجد مستخدمين</option>
+                  )}
+                </select>
               </div>
               <div>
-                <input
-                  type="email"
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  المستخدم الثاني
+                </label>
+                <select
                   value={swapData.email2}
                   onChange={(e) => setSwapData({...swapData, email2: e.target.value})}
                   className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                  placeholder="أدخل البريد الإلكتروني الثاني"
                   required
-                />
+                >
+                  <option value="">اختر المستخدم الثاني</option>
+                  {usersDetails && usersDetails.length > 0 ? (
+                    usersDetails.map((user, index) => (
+                      <option key={`user2-${index}`} value={user.userEmail}>
+                        {user.userEmail}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="" disabled>لا يوجد مستخدمين</option>
+                  )}
+                </select>
               </div>
             </div>
             <div className="text-center">

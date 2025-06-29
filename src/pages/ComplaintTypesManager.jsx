@@ -12,6 +12,14 @@ const ComplaintTypesManager = () => {
   const [typeName, setTypeName] = useState("");
   const navigate = useNavigate();
   const { CompId, setCompId } = useComplaintIdContext();
+  // إضافة حالات جديدة للتعديل
+  const [editMode, setEditMode] = useState(false);
+  const [editId, setEditId] = useState(null);
+  const [message, setMessage] = useState({ text: "", type: "" });
+
+  // إضافة حالات الترقيم
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
 
   const fetchComplaintType = async () => {
     try {
@@ -28,7 +36,6 @@ const ComplaintTypesManager = () => {
       console.log("خطأ في جلب أنواع الشكاوى:", err);
     }
   };
-  console.log(complaintType);
 
   useEffect(() => {
     const fetchDepartments = async () => {
@@ -46,32 +53,94 @@ const ComplaintTypesManager = () => {
     fetchComplaintType();
   }, []);
 
+  // وظيفة بدء التعديل
+  const handleEdit = (comp) => {
+    setEditMode(true);
+    setEditId(comp.id);
+    setTypeName(comp.typeName);
+    setDepartmentId(comp.departmentId || "");
+  };
+
   // For post Data
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setMessage({ text: "", type: "" });
+
     try {
-      const response = await axios.post(
-        "https://complain.runasp.net/api/ComplaintType/AddComplaintType",
-        {
-          typeName,
-          departmentId: Number(departmentId),
-        },
-        {
-          headers: {
-            Authorization: bearerToken,
+      if (editMode) {
+        // تحديث نوع الشكوى
+        await axios.post(
+          "https://complain.runasp.net/api/ComplaintType/Update-ComplaintType",
+          {
+            id: editId,
+            typeName: typeName,
           },
-        }
-      );
+          {
+            headers: {
+              Authorization: bearerToken,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        setMessage({ text: "تم تحديث نوع الشكوى بنجاح", type: "success" });
+        setEditMode(false);
+        setEditId(null);
+      } else {
+        // إضافة نوع شكوى جديد
+        await axios.post(
+          "https://complain.runasp.net/api/ComplaintType/AddComplaintType",
+          {
+            typeName,
+            departmentId: Number(departmentId),
+          },
+          {
+            headers: {
+              Authorization: bearerToken,
+            },
+          }
+        );
+
+        setMessage({ text: "تمت إضافة نوع الشكوى بنجاح", type: "success" });
+      }
+
       setTypeName("");
       setDepartmentId("");
       await fetchComplaintType();
     } catch (error) {
       console.log(error);
+      setMessage({
+        text: error.response?.data?.message || "حدث خطأ أثناء العملية",
+        type: "error",
+      });
     }
   };
+
   const clearData = () => {
     setDepartmentId("");
     setTypeName("");
+    setEditMode(false);
+    setEditId(null);
+    setMessage({ text: "", type: "" });
+  };
+
+  // حساب الصفحات والعناصر المعروضة
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = complaintType.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(complaintType.length / itemsPerPage);
+
+  // وظائف التنقل بين الصفحات
+  const goToNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const goToPreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
   };
 
   return (
@@ -80,12 +149,27 @@ const ComplaintTypesManager = () => {
       <div className="bg-white p-8 my-7 rounded-lg shadow-lg w-full max-w-[700px]">
         {/* <!-- Title --> */}
         <h1 className="text-2xl font-bold text-green-600 text-right mb-4">
-          إدأرة انواع الشكاوي
+          {editMode ? "تعديل نوع الشكوى" : "إدأرة انواع الشكاوي"}
         </h1>
 
         <h3 className="text-l font-bold text-gray-400 text-right mb-6">
-          يرجي ادخال نوع الشكوى وتحديد القسم التابع لها
+          {editMode
+            ? "يرجى تعديل بيانات نوع الشكوى"
+            : "يرجي ادخال نوع الشكوى وتحديد القسم التابع لها"}
         </h3>
+
+        {/* رسالة الحالة */}
+        {message.text && (
+          <div
+            className={`p-3 mb-4 rounded-md text-right ${
+              message.type === "success"
+                ? "bg-green-100 text-green-700"
+                : "bg-red-100 text-red-700"
+            }`}
+          >
+            {message.text}
+          </div>
+        )}
 
         {/* <!-- Form Fields --> */}
         <div className="space-y-4">
@@ -120,6 +204,7 @@ const ComplaintTypesManager = () => {
                 value={departmentId}
                 onChange={(e) => setDepartmentId(e.target.value)}
                 className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                disabled={editMode} // تعطيل تغيير القسم في وضع التعديل
               >
                 <option value="">اختر القسم</option>
                 {departments.map((dep) => (
@@ -133,12 +218,12 @@ const ComplaintTypesManager = () => {
 
           {/* <!-- Buttons --> */}
           <div className="flex justify-between space-x-4">
-            {/* <!-- Add Button --> */}
+            {/* <!-- Add/Update Button --> */}
             <button
               onClick={handleSubmit}
               className="w-1/2 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition duration-200"
             >
-              إضافة
+              {editMode ? "تحديث" : "إضافة"}
             </button>
             {/* <!-- Cancel Button --> */}
             <button
@@ -151,7 +236,7 @@ const ComplaintTypesManager = () => {
         </div>
 
         {/* <!-- Bottom Section with Table --> */}
-        <div className="mt-6">
+        <div className="mt-6 overflow-auto">
           {/* <!-- Table --> */}
           <table className="w-full">
             <thead>
@@ -162,39 +247,70 @@ const ComplaintTypesManager = () => {
               </tr>
             </thead>
             <tbody>
-              {complaintType.map((comp) => {
-                return (
-                  <tr key={comp.id}>
-                    <td className=" border border-gray-200 p-2 text-right">
-                      {comp.typeName}
-                    </td>
-                    <td className=" border border-gray-200 p-2 text-right">
-                      {comp.departmentName}
-                    </td>
-                    <td className=" border border-gray-200 p-2 text-right">
-                      <div className="flex space-x-2">
-                        <button className="px-2 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition duration-200">
-                          تعديل
-                        </button>
-                        <button className="px-2 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition duration-200">
-                          حذف
-                        </button>
-                        <button
-                          onClick={() => {
-                            setCompId(comp.id);
-                            navigate("/userDetails");
-                          }}
-                          className="px-2 py-1 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition duration-200"
-                        >
-                          التفاصيل
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
+              {currentItems.map((comp) => (
+                <tr key={comp.id}>
+                  <td className="border border-gray-200 p-2 text-right">
+                    {comp.typeName}
+                  </td>
+                  <td className="border border-gray-200 p-2 text-right">
+                    {comp.departmentName}
+                  </td>
+                  <td className="border border-gray-200 p-2 text-right">
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handleEdit(comp)}
+                        className="px-2 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition duration-200"
+                      >
+                        تعديل
+                      </button>
+                      <button
+                        onClick={() => {
+                          setCompId(comp.id);
+                          navigate("/userDetails");
+                        }}
+                        className="px-2 py-1 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition duration-200"
+                      >
+                        التفاصيل
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
+
+          {/* <!-- Pagination --> */}
+          {totalPages > 1 && (
+            <div className="flex justify-center items-center mt-4 gap-2">
+              <button
+                onClick={goToPreviousPage}
+                disabled={currentPage <= 1}
+                className={`px-3 py-1 rounded ${
+                  currentPage > 1
+                    ? "bg-green-600 text-white"
+                    : "bg-gray-200 text-gray-500 cursor-not-allowed"
+                }`}
+              >
+                السابق
+              </button>
+
+              <span className="text-gray-600">
+                صفحة {currentPage} من {totalPages}
+              </span>
+
+              <button
+                onClick={goToNextPage}
+                disabled={currentPage >= totalPages}
+                className={`px-3 py-1 rounded ${
+                  currentPage < totalPages
+                    ? "bg-green-600 text-white"
+                    : "bg-gray-200 text-gray-500 cursor-not-allowed"
+                }`}
+              >
+                التالي
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
