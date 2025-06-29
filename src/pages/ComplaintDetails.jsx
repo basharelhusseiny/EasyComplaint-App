@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useComplaintIdDetailsContext } from "../context/IdOfComplaintDetails";
+import { jwtDecode } from "jwt-decode";
 
 const ComplaintDetails = () => {
   const token = localStorage.getItem("token");
@@ -11,8 +12,20 @@ const ComplaintDetails = () => {
   const [selectedStatus, setSelectedStatus] = useState("");
   const [statusLoading, setStatusLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState({ text: "", type: "" });
+  const [userRole, setUserRole] = useState("");
 
   useEffect(() => {
+    // استخراج دور المستخدم من التوكن
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        const role = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+        setUserRole(role);
+      } catch (err) {
+        console.error("خطأ في فك تشفير التوكن:", err);
+      }
+    }
+
     const fetchComplaint = async () => {
       try {
         const res = await axios.get(
@@ -58,19 +71,35 @@ const ComplaintDetails = () => {
 
   const handleComment = async (e) => {
     e.preventDefault();
+    
+    // التحقق من وجود نص التعليق
+    if (!commentText.trim()) {
+      return;
+    }
+    
     try {
       const response = await axios.post(
         "https://complain.runasp.net/api/Comment/Add",
         {
+          complaintID: CompDetailsId, // إضافة معرف الشكوى
           commentText: commentText,
         },
         {
           headers: {
             Authorization: bearerToken,
+            "Content-Type": "application/json"
           },
         }
       );
+      
+      console.log("تم إضافة التعليق بنجاح:", response.data);
+      
+      // إعادة تعيين حقل التعليق
       setCommentText("");
+      
+      // يمكن إضافة تحديث للتعليقات هنا إذا كنت تريد عرض التعليق الجديد فورًا
+      // fetchComments(); // وظيفة لجلب التعليقات المحدثة
+      
     } catch (err) {
       console.log(
         "خطأ أثناء إرسال التعليق:",
@@ -136,13 +165,13 @@ const ComplaintDetails = () => {
   return (
     <div className="bg-gray-100">
       <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="bg-white border border-dashed border-blue-500 p-6 w-full max-w-2xl rounded-md">
+        <div className="bg-white border border-dashed border-green-600 p-6 w-full max-w-2xl rounded-md">
           <div className="mb-4">
             <h2 className="text-green-700 font-bold text-xl mb-1">
               تفاصيل الشكوى
             </h2>
             <div className="flex justify-between items-center">
-              <div>
+              <div className="space-y-4">
                 <h3 className="text-gray-800 font-semibold text-lg">
                   {complaint?.complaintTypeName || "عنوان الشكوى"}
                 </h3>
@@ -161,12 +190,13 @@ const ComplaintDetails = () => {
                     {getArabicStatus(complaint?.status) || "تصنيف"}
                   </span>
                 </h5>
-                <p className="text-gray-600 text-sm mt-1">
+                <p className="text-gray-800  mt-1">
                   {complaint?.description || "وصف الشكوى"}
                 </p>
               </div>
 
-              {complaint?.status !== "Resolved" && (
+              {/* عرض خيارات تغيير الحالة فقط للموظفين */}
+              {userRole === "Employee" && complaint?.status !== "Resolved" && (
                 <div className="flex flex-col space-y-2">
                   {statusMessage.text && (
                     <div

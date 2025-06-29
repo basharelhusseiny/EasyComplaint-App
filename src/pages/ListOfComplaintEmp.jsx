@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useComplaintIdDetailsContext } from "../context/IdOfComplaintDetails";
 
-const ListOfComplaints = () => {
+const ListOfComplaintEmp = () => {
   const token = localStorage.getItem("token");
   const bearerToken = `Bearer ${token}`;
   const { CompDetailsId, setCompDetailsId } = useComplaintIdDetailsContext();
@@ -34,27 +34,31 @@ const ListOfComplaints = () => {
     }
   };
 
-  // تحويل الحالة العربية إلى الإنجليزية للتصفية
-  const getEnglishStatus = (arabicStatus) => {
+  // تحويل الحالة العربية إلى رقم الحالة للAPI
+  const getStatusNumber = (arabicStatus) => {
     switch (arabicStatus) {
       case "معلق":
-        return "Pending";
+        return 0; // Pending
       case "قيد التنفيذ":
-        return "InProgress";
+        return 1; // InProgress
       case "تم الحل":
-        return "Resolved";
+        return 4; // Resolved
       default:
-        return arabicStatus;
+        return 0; // الافتراضي هو معلق
     }
   };
 
   const fetchComplaints = async (page) => {
     setLoading(true);
     try {
-      console.log(`جاري جلب الصفحة ${page}...`);
+      console.log(`جاري جلب الصفحة ${page} بحالة ${activeStatus}...`);
 
+      // الحصول على رقم الحالة المناسب للAPI
+      const statusNumber = getStatusNumber(activeStatus);
+      
+      // استخدام API الشكاوى المسندة للموظف مع معلمة الحالة
       const response = await axios.get(
-        `https://complain.runasp.net/api/Complaint/MyComplaints`,
+        `https://complain.runasp.net/api/Complaint/AssingedComplaints?status=${statusNumber}`,
         {
           headers: {
             Authorization: bearerToken,
@@ -66,14 +70,18 @@ const ListOfComplaints = () => {
       console.log("استجابة API:", response.data);
 
       // تحديث البيانات
-      setComplaints(response.data.items);
-      setPagination({
-        count: response.data.count,
-        totalPages: response.data.totalPages,
-        currentPage: response.data.currentPage,
-        hasNextPage: response.data.hasNextPage,
-        hasPreviousPage: response.data.hasPreviousPage,
-      });
+      setComplaints(response.data.items || response.data);
+      
+      // تحديث الترقيم إذا كانت البيانات تحتوي على معلومات الترقيم
+      if (response.data.totalPages) {
+        setPagination({
+          count: response.data.count,
+          totalPages: response.data.totalPages,
+          currentPage: response.data.currentPage,
+          hasNextPage: response.data.hasNextPage,
+          hasPreviousPage: response.data.hasPreviousPage,
+        });
+      }
     } catch (error) {
       console.error("خطأ في جلب الشكاوى:", error);
     } finally {
@@ -81,10 +89,10 @@ const ListOfComplaints = () => {
     }
   };
   
-  // استدعاء API عند تغيير رقم الصفحة
+  // استدعاء API عند تغيير رقم الصفحة أو الحالة النشطة
   useEffect(() => {
     fetchComplaints(pageNumber);
-  }, [pageNumber]);
+  }, [pageNumber, activeStatus]);
 
   // تغيير الحالة النشطة
   const changeStatus = (status) => {
@@ -107,25 +115,13 @@ const ListOfComplaints = () => {
     }
   };
 
-  // تصفية الشكاوى حسب الحالة
-  const filteredComplaints = complaints.filter(
-    (comp) => getArabicStatus(comp.status) === activeStatus
-  );
-
-  // حساب عدد الشكاوى لكل حالة
-  const countByStatus = {
-    "معلق": complaints.filter(comp => getArabicStatus(comp.status) === "معلق").length,
-    "قيد التنفيذ": complaints.filter(comp => getArabicStatus(comp.status) === "قيد التنفيذ").length,
-    "تم الحل": complaints.filter(comp => getArabicStatus(comp.status) === "تم الحل").length
-  };
-
   return (
     <div className="bg-gray-100 p-6">
       <div className="max-w-5xl mx-auto border-2 border-green-600 p-4 bg-white rounded-md shadow-md">
         <div className="border-2 border-green-600 border-dashed p-4 rounded-md">
           <div className="mb-4">
             <h1 className="text-2xl font-bold text-gray-800 mb-2">
-              قائمة الشكاوى{" "}
+             قائمة الشكاوى المسندة{" "}
               {loading && (
                 <span className="text-sm text-gray-500">(جاري التحميل...)</span>
               )}
@@ -170,8 +166,8 @@ const ListOfComplaints = () => {
               <div className="text-center py-8 text-gray-500">
                 جاري تحميل الشكاوى...
               </div>
-            ) : filteredComplaints.length > 0 ? (
-              filteredComplaints.map((comp) => (
+            ) : complaints.length > 0 ? (
+              complaints.map((comp) => (
                 <div
                   key={comp.id}
                   className="flex justify-between items-center border p-4 rounded-lg shadow-sm"
@@ -253,4 +249,4 @@ const ListOfComplaints = () => {
   );
 };
 
-export default ListOfComplaints;
+export default ListOfComplaintEmp;

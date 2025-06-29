@@ -20,6 +20,8 @@ import DepartmentManagement from "./pages/DepartmentManagement";
 import RecoverPassword from "./pages/RecoverPassword";
 import AddWorkflow from "./pages/AddWorkflow";
 import ChangePassword from "./pages/ChangePassword";
+import ListOfComplaintEmp from "./pages/ListOfComplaintEmp";
+import ContactUs from "./pages/ContactUs";
 
 const router = createBrowserRouter([
   {
@@ -58,7 +60,7 @@ const router = createBrowserRouter([
       {
         path: "/complaintDetails",
         element: (
-          <ProtectedRoute allowedRoles={["Complainer"]}>
+          <ProtectedRoute allowedRoles={["Complainer", "Employee"]}>
             <ComplaintDetails />
           </ProtectedRoute>
         ),
@@ -116,6 +118,22 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute allowedRoles={["Admin", "Complainer", "Employee"]}>
             <ChangePassword />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/ListOfComplaintEmp",
+        element: (
+          <ProtectedRoute allowedRoles={["Employee"]}>
+            <ListOfComplaintEmp />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/ContactUs",
+        element: (
+          <ProtectedRoute allowedRoles={["Admin", "Complainer", "Employee"]}>
+            <ContactUs />
           </ProtectedRoute>
         ),
       },

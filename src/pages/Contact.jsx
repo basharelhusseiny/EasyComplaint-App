@@ -53,6 +53,25 @@ const Contact = () => {
     setLoading(true);
     setMessage({ text: "", type: "" });
 
+    // التحقق من صحة البيانات
+    if (!title.trim()) {
+      setMessage({ text: "يرجى إدخال عنوان الشكوى", type: "error" });
+      setLoading(false);
+      return;
+    }
+
+    if (!selectedTypeId) {
+      setMessage({ text: "يرجى اختيار نوع الشكوى", type: "error" });
+      setLoading(false);
+      return;
+    }
+
+    if (!description.trim()) {
+      setMessage({ text: "يرجى إدخال وصف الشكوى", type: "error" });
+      setLoading(false);
+      return;
+    }
+
     try {
       // إنشاء FormData لإرسال البيانات والملفات
       const formData = new FormData();
@@ -61,8 +80,18 @@ const Contact = () => {
       formData.append("complaintTypeID", parseInt(selectedTypeId));
       
       // إضافة الملفات إلى FormData
-      files.forEach((file, index) => {
-        formData.append(`attachments`, file);
+      if (files && files.length > 0) {
+        files.forEach((file) => {
+          formData.append("attachments", file);
+        });
+      }
+
+      // إضافة معلومات إضافية للتصحيح
+      console.log("بيانات الإرسال:", {
+        title,
+        description,
+        complaintTypeID: parseInt(selectedTypeId),
+        filesCount: files.length
       });
 
       // إرسال الطلب مع الملفات
@@ -72,8 +101,11 @@ const Contact = () => {
         {
           headers: {
             Authorization: bearerToken,
-            "Content-Type": "multipart/form-data",
+            // لا تحدد Content-Type عند استخدام FormData
+            // سيتم تعيينه تلقائيًا مع boundary صحيح
           },
+          // إضافة خيار timeout لمنع الطلبات الطويلة
+          timeout: 30000
         }
       );
 
@@ -94,7 +126,8 @@ const Contact = () => {
         navigate("/listOfComplaints");
       }, 1500);
     } catch (err) {
-      console.log("خطأ أثناء إرسال الشكوى:", err.response?.data || err.message);
+      console.log("خطأ أثناء إرسال الشكوى:", err);
+      console.log("تفاصيل الخطأ:", err.response?.data || err.message);
       setMessage({ 
         text: err.response?.data?.message || "حدث خطأ أثناء إرسال الشكوى. يرجى المحاولة مرة أخرى.", 
         type: "error" 

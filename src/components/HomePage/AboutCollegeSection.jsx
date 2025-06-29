@@ -1,6 +1,8 @@
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router";
 
 const AboutCollegeSection = () => {
+  const navigate = useNavigate()
   const features = [
     { id: 1, title: "الخدمات التعليمية", icon: "🎓" },
     { id: 2, title: "الخدمات الطلابية", icon: "👨‍🎓" },
@@ -54,7 +56,7 @@ const AboutCollegeSection = () => {
               ))}
             </div>
 
-            <button className="mt-6 bg-gradient-to-bl from-green-400 to-green-800 hover:from-green-800 hover:to-green-400 px-6 py-3 rounded-xl text-white cursor-pointer font-semibold hover:scale-105 duration-200 transition-all shadow-md">
+            <button onClick={()=>navigate("/contact")} className="mt-6 bg-gradient-to-bl from-green-400 to-green-800 hover:from-green-800 hover:to-green-400 px-6 py-3 rounded-xl text-white cursor-pointer font-semibold hover:scale-105 duration-200 transition-all shadow-md">
               تقديم شكوى
             </button>
           </motion.div>

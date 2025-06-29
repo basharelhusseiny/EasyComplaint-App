@@ -1,4 +1,7 @@
+import { useNavigate } from "react-router";
+
 const HeroSection = () => {
+  const navigate = useNavigate()
   return (
     <div className="relative bg-[url(/Images/homepage/first.jpg)] bg-cover bg-center w-full h-[calc(100vh-72px)]">
       {/* Overlay */}
@@ -20,10 +23,10 @@ const HeroSection = () => {
               على معالجتها بأسرع وقت ممكن.
             </p>
             <div className="flex gap-5 items-center justify-center">
-              <button className="bg-gradient-to-bl from-green-400 to-green-800 hover:from-green-800 hover:to-green-400 px-5 py-2 rounded-xl text-white cursor-pointer font-semibold  hover:scale-105 duration-200 transition-colors">
+              <button onClick={()=>navigate("/ContactUs")} className="bg-gradient-to-bl from-green-400 to-green-800 hover:from-green-800 hover:to-green-400 px-5 py-2 rounded-xl text-white cursor-pointer font-semibold  hover:scale-105 duration-200 transition-colors">
                 تواصل معنا
               </button>
-              <button className="bg-gradient-to-bl from-green-400 to-green-800 hover:from-green-800 hover:to-green-400 px-5 py-2 rounded-xl text-white cursor-pointer font-semibold  hover:scale-105 duration-200 transition-colors">
+              <button onClick={()=>navigate("/contact")} className="bg-gradient-to-bl from-green-400 to-green-800 hover:from-green-800 hover:to-green-400 px-5 py-2 rounded-xl text-white cursor-pointer font-semibold  hover:scale-105 duration-200 transition-colors">
                 تقديم شكوى
               </button>
             </div>

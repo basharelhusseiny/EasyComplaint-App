@@ -41,7 +41,7 @@ const Layout = () => {
       id: 6,
       link: "تفاصيل الشكوي",
       path: "/complaintDetails",
-      roles: ["Complainer"],
+      roles: ["Complainer", "Employee"],
     },
     {
       id: 7,
@@ -66,6 +66,17 @@ const Layout = () => {
       link: "إداره الاقسام",
       path: "/DepartmentManagement",
       roles: ["Admin"],
+    },
+    {
+      id: 11,
+      link: "قائمة الشكاوي المسندة",
+      path: "/ListOfComplaintEmp",
+      roles: ["Employee"],
+    },
+    {
+      id: 12,
+      link: "تواصل معنا ",
+      path: "/ContactUs",
     },
   ];
 

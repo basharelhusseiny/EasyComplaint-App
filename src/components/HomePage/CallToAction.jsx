@@ -1,7 +1,10 @@
 import { FaCheckCircle } from "react-icons/fa";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router";
 
 const CallToAction = () => {
+  const navigate = useNavigate();
+
   const priorities = [
     "تحسين جودة المحاضرات والتفاعل",
     "تحسين جودة المحاضرات والتفاعل",
@@ -27,7 +30,10 @@ const CallToAction = () => {
               بيئة التعلم والبحث العلمي
             </p>
             <div className="flex justify-between gap-4 mt-4">
-              <button className="cursor-pointer bg-gradient-to-bl from-green-400 to-green-800 hover:from-green-800 hover:to-green-400 text-white py-2 px-4 rounded-lg w-full duration-200 transition-colors">
+              <button
+                onClick={() => navigate("/contact")}
+                className="cursor-pointer bg-gradient-to-bl from-green-400 to-green-800 hover:from-green-800 hover:to-green-400 text-white py-2 px-4 rounded-lg w-full duration-200 transition-colors"
+              >
                 تقديم شكوى
               </button>
               <button className="cursor-pointer bg-white border-2 border-green-600 text-green-600 hover:bg-green-100 py-2 px-4 rounded-lg w-full duration-300">
