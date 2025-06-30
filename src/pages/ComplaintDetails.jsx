@@ -14,12 +14,24 @@ const ComplaintDetails = () => {
   const [statusMessage, setStatusMessage] = useState({ text: "", type: "" });
   const [userRole, setUserRole] = useState("");
 
+  // إضافة حالة جديدة للتصعيد
+  const [escalateComment, setEscalateComment] = useState("");
+  const [showEscalateModal, setShowEscalateModal] = useState(false);
+  const [escalateLoading, setEscalateLoading] = useState(false);
+  const [escalateMessage, setEscalateMessage] = useState({
+    text: "",
+    type: "",
+  });
+
   useEffect(() => {
     // استخراج دور المستخدم من التوكن
     if (token) {
       try {
         const decoded = jwtDecode(token);
-        const role = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+        const role =
+          decoded[
+            "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+          ];
         setUserRole(role);
       } catch (err) {
         console.error("خطأ في فك تشفير التوكن:", err);
@@ -71,15 +83,15 @@ const ComplaintDetails = () => {
 
   const handleComment = async (e) => {
     e.preventDefault();
-    
+
     // التحقق من وجود نص التعليق
     if (!commentText.trim()) {
       return;
     }
-    
+
     try {
       const response = await axios.post(
-        "https://complain.runasp.net/api/Comment/Add",
+        "https://complain.runasp.net/api/Comment/Add-Comment-For-Employee",
         {
           complaintID: CompDetailsId, // إضافة معرف الشكوى
           commentText: commentText,
@@ -87,19 +99,18 @@ const ComplaintDetails = () => {
         {
           headers: {
             Authorization: bearerToken,
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
           },
         }
       );
-      
+
       console.log("تم إضافة التعليق بنجاح:", response.data);
-      
+
       // إعادة تعيين حقل التعليق
       setCommentText("");
-      
+
       // يمكن إضافة تحديث للتعليقات هنا إذا كنت تريد عرض التعليق الجديد فورًا
       // fetchComments(); // وظيفة لجلب التعليقات المحدثة
-      
     } catch (err) {
       console.log(
         "خطأ أثناء إرسال التعليق:",
@@ -159,6 +170,49 @@ const ComplaintDetails = () => {
       });
     } finally {
       setStatusLoading(false);
+    }
+  };
+
+  // وظيفة تصعيد الشكوى
+  const handleEscalate = async () => {
+    setEscalateLoading(true);
+    setEscalateMessage({ text: "", type: "" });
+
+    try {
+      await axios.post(
+        `https://complain.runasp.net/api/Complaint/Escalate?ComplaintID=${CompDetailsId}&Comment=${encodeURIComponent(
+          escalateComment || ""
+        )}`,
+        {},
+        {
+          headers: {
+            Authorization: bearerToken,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      setEscalateMessage({
+        text: "تم تصعيد الشكوى بنجاح",
+        type: "success",
+      });
+
+      // إغلاق النافذة المنبثقة بعد التصعيد الناجح
+      setTimeout(() => {
+        setShowEscalateModal(false);
+        setEscalateComment("");
+      }, 1500);
+    } catch (err) {
+      console.error(
+        "خطأ أثناء تصعيد الشكوى:",
+        err.response?.data || err.message
+      );
+      setEscalateMessage({
+        text: err.response?.data?.message || "حدث خطأ أثناء تصعيد الشكوى",
+        type: "error",
+      });
+    } finally {
+      setEscalateLoading(false);
     }
   };
 
@@ -268,9 +322,75 @@ const ComplaintDetails = () => {
             </div>
           </div>
 
-          <button className="w-full border border-green-600 text-green-700 py-2 px-4 rounded-md hover:bg-green-50">
-            إغلاق الشكوى
-          </button>
+          {/* أزرار الإجراءات */}
+          <div className="flex gap-2">
+            <button className="flex-1 border border-green-600 text-green-700 py-2 px-4 rounded-md hover:bg-green-50">
+              إغلاق الشكوى
+            </button>
+
+            {/* زر تصعيد الشكوى - يظهر للموظفين فقط */}
+            {userRole === "Employee" && (
+              <button
+                onClick={() => setShowEscalateModal(true)}
+                className="flex-1 border py-2 px-4 rounded-md text-white bg-green-700 hover:bg-green-800"
+              >
+                تصعيد الشكوى
+              </button>
+            )}
+          </div>
+
+          {/* نافذة منبثقة لتصعيد الشكوى */}
+          {showEscalateModal && (
+            <div className="fixed inset-0 bg-black/70 bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white p-6 rounded-lg w-full max-w-md">
+                <h3 className="text-xl font-bold text-gray-800 mb-4">
+                  تصعيد الشكوى
+                </h3>
+
+                {escalateMessage.text && (
+                  <div
+                    className={`mb-4 p-2 rounded ${
+                      escalateMessage.type === "success"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-red-100 text-red-700"
+                    }`}
+                  >
+                    {escalateMessage.text}
+                  </div>
+                )}
+
+                <div className="mb-4">
+                  <label className="block text-gray-700 mb-2">
+                    تعليق التصعيد (اختياري)
+                  </label>
+                  <textarea
+                    value={escalateComment}
+                    onChange={(e) => setEscalateComment(e.target.value)}
+                    className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    rows="3"
+                    placeholder="أدخل سبب التصعيد (اختياري)"
+                  ></textarea>
+                </div>
+
+                <div className="flex justify-end space-x-2">
+                  <button
+                    onClick={() => setShowEscalateModal(false)}
+                    className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100"
+                    disabled={escalateLoading}
+                  >
+                    إلغاء
+                  </button>
+                  <button
+                    onClick={handleEscalate}
+                    disabled={escalateLoading}
+                    className="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700"
+                  >
+                    {escalateLoading ? "جاري التصعيد..." : "تصعيد"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

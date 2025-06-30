@@ -75,24 +75,27 @@ const Contact = () => {
     try {
       // إنشاء FormData لإرسال البيانات والملفات
       const formData = new FormData();
-      formData.append("title", title);
-      formData.append("description", description);
-      formData.append("complaintTypeID", parseInt(selectedTypeId));
+      formData.append("Title", title);
+      formData.append("Description", description);
+      formData.append("ComplaintTypeID", parseInt(selectedTypeId));
       
-      // إضافة الملفات إلى FormData
+      // إضافة الملفات إلى FormData (اختياري)
       if (files && files.length > 0) {
         files.forEach((file) => {
-          formData.append("attachments", file);
+          formData.append("Attachments", file);
         });
+      } else {
+        // إضافة ملف فارغ كحل بديل
+        const emptyBlob = new Blob([""], { type: "application/octet-stream" });
+        const emptyFile = new File([emptyBlob], "empty.txt", { type: "application/octet-stream" });
+        formData.append("Attachments", emptyFile);
       }
 
-      // إضافة معلومات إضافية للتصحيح
-      console.log("بيانات الإرسال:", {
-        title,
-        description,
-        complaintTypeID: parseInt(selectedTypeId),
-        filesCount: files.length
-      });
+      // طباعة محتويات FormData للتصحيح
+      console.log("بيانات الإرسال:");
+      for (let pair of formData.entries()) {
+        console.log(pair[0] + ': ' + (pair[1] instanceof File ? pair[1].name : pair[1]));
+      }
 
       // إرسال الطلب مع الملفات
       const response = await axios.post(
@@ -101,10 +104,7 @@ const Contact = () => {
         {
           headers: {
             Authorization: bearerToken,
-            // لا تحدد Content-Type عند استخدام FormData
-            // سيتم تعيينه تلقائيًا مع boundary صحيح
           },
-          // إضافة خيار timeout لمنع الطلبات الطويلة
           timeout: 30000
         }
       );
@@ -127,7 +127,10 @@ const Contact = () => {
       }, 1500);
     } catch (err) {
       console.log("خطأ أثناء إرسال الشكوى:", err);
-      console.log("تفاصيل الخطأ:", err.response?.data || err.message);
+      if (err.response) {
+        console.log("رمز الخطأ:", err.response.status);
+        console.log("بيانات الخطأ:", err.response.data);
+      }
       setMessage({ 
         text: err.response?.data?.message || "حدث خطأ أثناء إرسال الشكوى. يرجى المحاولة مرة أخرى.", 
         type: "error" 

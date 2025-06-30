@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router";
 import { FcGoogle } from "react-icons/fc";
 import { useState } from "react";
 import axios from "axios";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -10,7 +11,12 @@ const LoginPage = () => {
   const [role, setRole] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -84,15 +90,26 @@ const LoginPage = () => {
               />
             </div>
 
-            <div>
+            <div className="relative">
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="كلمة السر"
                 required
                 className="w-full p-3 rounded-md bg-white text-right focus:outline-green-500"
               />
+              <button
+                type="button"
+                onClick={togglePasswordVisibility}
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+              >
+                {showPassword ? (
+                  <FiEyeOff className="h-5 w-5" />
+                ) : (
+                  <FiEye className="h-5 w-5" />
+                )}
+              </button>
             </div>
 
             {/* Radio role */}
@@ -172,19 +189,10 @@ const LoginPage = () => {
               <p className="text-green-400 text-right">{successMsg}</p>
             )}
 
-            <div className="flex items-center justify-center gap-4 my-4">
+            <div className="flex items-center justify-center my-4">
               <div className="h-px bg-white/20 flex-grow"></div>
-              <span className="text-white/60">أو</span>
               <div className="h-px bg-white/20 flex-grow"></div>
             </div>
-
-            <button
-              type="button"
-              className="w-full flex items-center justify-center gap-2 bg-white py-3 rounded-md hover:bg-gray-200 transition-colors duration-300"
-            >
-              <FcGoogle size={25} />
-              <span className="text-gray-800">تسجيل الدخول عبر جوجل</span>
-            </button>
 
             <div className="text-center mt-6">
               <span className="text-white">ليس لديك حساب؟</span>{" "}

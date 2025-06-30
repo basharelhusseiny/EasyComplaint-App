@@ -37,32 +37,32 @@ const DepartmentManagement = () => {
   // إضافة قسم جديد
   const handleAddDepartment = async (e) => {
     e.preventDefault();
-    
+
     if (!departmentName.trim()) {
       setMessage({ text: "يرجى إدخال اسم القسم", type: "error" });
       return;
     }
-    
+
     setLoading(true);
     setMessage({ text: "", type: "" });
-    
+
     try {
       if (editMode) {
         // تحديث قسم موجود
         const response = await axios.put(
           "https://complain.runasp.net/api/Department/Update-Department",
-          { 
+          {
             id: currentDepartmentId,
-            departmentName 
+            departmentName,
           },
           {
             headers: {
               Authorization: bearerToken,
-              "Content-Type": "application/json"
-            }
+              "Content-Type": "application/json",
+            },
           }
         );
-        
+
         console.log("تم تحديث القسم بنجاح:", response.data);
         setMessage({ text: "تم تحديث القسم بنجاح", type: "success" });
         setEditMode(false);
@@ -75,27 +75,31 @@ const DepartmentManagement = () => {
           {
             headers: {
               Authorization: bearerToken,
-              "Content-Type": "application/json"
-            }
+              "Content-Type": "application/json",
+            },
           }
         );
-        
+
         console.log("تمت إضافة القسم بنجاح:", response.data);
         setMessage({ text: "تمت إضافة القسم بنجاح", type: "success" });
       }
-      
+
       setDepartmentName("");
-      
+
       // إعادة تحميل قائمة الأقسام
       fetchDepartments();
     } catch (error) {
       console.error(
-        editMode ? "خطأ في تحديث القسم:" : "خطأ في إضافة القسم:", 
+        editMode ? "خطأ في تحديث القسم:" : "خطأ في إضافة القسم:",
         error.response?.data || error.message
       );
-      setMessage({ 
-        text: error.response?.data?.message || (editMode ? "حدث خطأ أثناء تحديث القسم" : "حدث خطأ أثناء إضافة القسم"), 
-        type: "error" 
+      setMessage({
+        text:
+          error.response?.data?.message ||
+          (editMode
+            ? "حدث خطأ أثناء تحديث القسم"
+            : "حدث خطأ أثناء إضافة القسم"),
+        type: "error",
       });
     } finally {
       setLoading(false);
@@ -108,9 +112,9 @@ const DepartmentManagement = () => {
     setCurrentDepartmentId(department.id);
     setDepartmentName(department.departmentName);
     setMessage({ text: "", type: "" });
-    
+
     // التمرير إلى أعلى الصفحة للوصول إلى نموذج التعديل
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   // مسح البيانات وإلغاء وضع التعديل
@@ -152,20 +156,28 @@ const DepartmentManagement = () => {
             />
 
             {message.text && (
-              <div className={`p-2 mb-4 rounded ${message.type === "success" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+              <div
+                className={`p-2 mb-4 rounded ${
+                  message.type === "success"
+                    ? "bg-green-100 text-green-700"
+                    : "bg-red-100 text-red-700"
+                }`}
+              >
                 {message.text}
               </div>
             )}
 
             <div className="flex flex-col sm:flex-row gap-3">
-              <button 
+              <button
                 onClick={handleAddDepartment}
                 disabled={loading}
-                className={`text-white py-2 px-4 rounded-md hover:bg-green-800 flex-1 ${loading ? "bg-green-500 cursor-not-allowed" : "bg-green-700"}`}
+                className={`text-white py-2 px-4 rounded-md hover:bg-green-800 flex-1 ${
+                  loading ? "bg-green-500 cursor-not-allowed" : "bg-green-700"
+                }`}
               >
-                {loading ? "جاري المعالجة..." : (editMode ? "تحديث" : "إضافة")}
+                {loading ? "جاري المعالجة..." : editMode ? "تحديث" : "إضافة"}
               </button>
-              <button 
+              <button
                 onClick={handleClear}
                 className="bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600 flex-1"
               >
@@ -184,19 +196,19 @@ const DepartmentManagement = () => {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {depData.map((dep) => (
-                  <tr key={dep.id} className={currentDepartmentId === dep.id ? "bg-green-50" : ""}>
-                    <td className="py-3 px-4 text-sm">
-                      {dep.departmentName}
-                    </td>
+                  <tr
+                    key={dep.id}
+                    className={
+                      currentDepartmentId === dep.id ? "bg-green-50" : ""
+                    }
+                  >
+                    <td className="py-3 px-4 font-medium">{dep.departmentName}</td>
                     <td className="py-3 px-4 flex flex-wrap gap-2">
-                      <button 
+                      <button
                         onClick={() => handleEdit(dep)}
                         className="bg-green-700 text-white text-sm py-1 px-3 rounded hover:bg-green-800"
                       >
                         تعديل
-                      </button>
-                      <button className="bg-red-600 text-white text-sm py-1 px-3 rounded hover:bg-red-700">
-                        حذف
                       </button>
                     </td>
                   </tr>

@@ -10,26 +10,9 @@ const AddWorkflow = () => {
   const navigate = useNavigate()
   console.log(CompId);
 
-  const [formData, setFormData] = useState({
-    stepName: "",
-    complaintTypeID: CompId,
-    stepOrder: 0,
-    userEmail: "",
-  });
+  const [userEmail, setUserEmail] = useState("");
   const [message, setMessage] = useState({ text: "", type: "" });
   const [loading, setLoading] = useState(false);
-
-  // تحديث بيانات النموذج
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]:
-        name === "complaintTypeID" || name === "stepOrder"
-          ? parseInt(value)
-          : value,
-    });
-  };
 
   // إرسال النموذج
   const handleSubmit = async (e) => {
@@ -38,6 +21,14 @@ const AddWorkflow = () => {
     setMessage({ text: "", type: "" });
 
     try {
+      // إنشاء كائن البيانات مع قيم افتراضية للحقول غير المستخدمة
+      const formData = {
+        stepName: "خطوة افتراضية", // قيمة افتراضية
+        complaintTypeID: CompId,
+        stepOrder: 1, // قيمة افتراضية
+        userEmail: userEmail,
+      };
+
       const response = await axios.post(
         "https://complain.runasp.net/api/Workflow/Create",
         formData,
@@ -49,23 +40,23 @@ const AddWorkflow = () => {
         }
       );
 
-      console.log("تم إنشاء خطوة العمل بنجاح:", response.data);
-      setMessage({ text: "تم إنشاء خطوة العمل بنجاح", type: "success" });
+      console.log("تم إضافة المستخدم بنجاح:", response.data);
+      setMessage({ text: "تم إضافة المستخدم بنجاح", type: "success" });
 
       // إعادة تعيين النموذج
-      setFormData({
-        stepName: "",
-        complaintTypeID: CompId,
-        stepOrder: 0,
-        userEmail: "",
-      });
+      setUserEmail("");
+      
+      // الانتقال إلى صفحة تفاصيل المستخدم بعد فترة قصيرة
+      setTimeout(() => {
+        navigate("/userDetails");
+      }, 1500);
     } catch (err) {
       console.log(
-        "خطأ أثناء إنشاء خطوة العمل:",
+        "خطأ أثناء إضافة المستخدم:",
         err.response?.data || err.message
       );
       setMessage({
-        text: err.response?.data?.message || "حدث خطأ أثناء إنشاء خطوة العمل",
+        text: err.response?.data?.message || "حدث خطأ أثناء إضافة المستخدم",
         type: "error",
       });
     } finally {
@@ -94,39 +85,6 @@ const AddWorkflow = () => {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* اسم الخطوة */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              اسم الخطوة
-            </label>
-            <input
-              type="text"
-              name="stepName"
-              value={formData.stepName}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-              placeholder="أدخل اسم الخطوة"
-              required
-            />
-          </div>
-
-          {/* ترتيب الخطوة */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              ترتيب الخطوة
-            </label>
-            <input
-              type="number"
-              name="stepOrder"
-              value={formData.stepOrder}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-              placeholder="أدخل ترتيب الخطوة"
-              min="0"
-              required
-            />
-          </div>
-
           {/* البريد الإلكتروني للمستخدم */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -134,9 +92,8 @@ const AddWorkflow = () => {
             </label>
             <input
               type="email"
-              name="userEmail"
-              value={formData.userEmail}
-              onChange={handleChange}
+              value={userEmail}
+              onChange={(e) => setUserEmail(e.target.value)}
               className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
               placeholder="أدخل البريد الإلكتروني للمستخدم"
               required
@@ -145,7 +102,6 @@ const AddWorkflow = () => {
 
           {/* زر الإرسال */}
           <button
-          onClick={()=>navigate("/userDetails")}
             type="submit"
             disabled={loading}
             className={`w-full py-2 text-white rounded-md transition duration-200 ${
@@ -154,7 +110,7 @@ const AddWorkflow = () => {
                 : "bg-green-600 hover:bg-green-700"
             }`}
           >
-            {loading ? "جاري الإرسال..." : " أضافه مستخدم"}
+            {loading ? "جاري الإرسال..." : "إضافة مستخدم"}
           </button>
         </form>
       </div>
@@ -163,4 +119,5 @@ const AddWorkflow = () => {
 };
 
 export default AddWorkflow;
+
 
