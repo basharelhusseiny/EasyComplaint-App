@@ -84,16 +84,15 @@ const ComplaintDetails = () => {
   const handleComment = async (e) => {
     e.preventDefault();
 
-    // التحقق من وجود نص التعليق
     if (!commentText.trim()) {
       return;
     }
 
     try {
       const response = await axios.post(
-        "https://complain.runasp.net/api/Comment/Add-Comment-For-Employee",
+        "https://complain.runasp.net/api/Comment/Add-Comment-For-User",
         {
-          complaintID: CompDetailsId, // إضافة معرف الشكوى
+          complaintID: CompDetailsId,
           commentText: commentText,
         },
         {
@@ -173,13 +172,12 @@ const ComplaintDetails = () => {
     }
   };
 
-  // وظيفة تصعيد الشكوى
   const handleEscalate = async () => {
     setEscalateLoading(true);
     setEscalateMessage({ text: "", type: "" });
 
     try {
-      await axios.post(
+      await axios.put(
         `https://complain.runasp.net/api/Complaint/Escalate?ComplaintID=${CompDetailsId}&Comment=${encodeURIComponent(
           escalateComment || ""
         )}`,
@@ -197,7 +195,6 @@ const ComplaintDetails = () => {
         type: "success",
       });
 
-      // إغلاق النافذة المنبثقة بعد التصعيد الناجح
       setTimeout(() => {
         setShowEscalateModal(false);
         setEscalateComment("");

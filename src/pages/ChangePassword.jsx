@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router';
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 const ChangePassword = () => {
   const navigate = useNavigate();
@@ -10,38 +11,43 @@ const ChangePassword = () => {
   const [formData, setFormData] = useState({
     lastPassword: "",
     newPassword: "",
-    newPasswordConform: ""
+    newPasswordConform: "",
   });
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "" });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordTwo, setShowPasswordTwo] = useState(false);
+  const [showPasswordThree, setShowPasswordThree] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showNewPasswordConform, setShowNewPasswordConform] = useState(false);
 
   const handleChange = (e) => {
     const { id, value } = e.target;
-    setFormData(prev => ({ ...prev, [id]: value }));
+    setFormData((prev) => ({ ...prev, [id]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // التحقق من تطابق كلمتي المرور
     if (formData.newPassword !== formData.newPasswordConform) {
       setMessage({ text: "كلمتا المرور الجديدة غير متطابقتين", type: "error" });
       return;
     }
-    
+
     // التحقق من طول كلمة المرور
     if (formData.newPassword.length < 8) {
-      setMessage({ 
-        text: "كلمة المرور الجديدة يجب أن تكون 8 أحرف على الأقل", 
-        type: "error" 
+      setMessage({
+        text: "كلمة المرور الجديدة يجب أن تكون 8 أحرف على الأقل",
+        type: "error",
       });
       return;
     }
-    
+
     setLoading(true);
     setMessage({ text: "", type: "" });
-    
+
     try {
       await axios.put(
         "https://complain.runasp.net/api/Account/Change-Password",
@@ -49,30 +55,30 @@ const ChangePassword = () => {
         {
           headers: {
             Authorization: bearerToken,
-            "Content-Type": "application/json"
-          }
+            "Content-Type": "application/json",
+          },
         }
       );
-      
+
       setMessage({ text: "تم تغيير كلمة المرور بنجاح", type: "success" });
-      
+
       // إعادة تعيين النموذج
       setFormData({
         lastPassword: "",
         newPassword: "",
-        newPasswordConform: ""
+        newPasswordConform: "",
       });
-      
+
       // التوجيه إلى الصفحة الرئيسية بعد فترة قصيرة
       setTimeout(() => {
         navigate("/");
       }, 2000);
-      
     } catch (error) {
       console.error("خطأ في تغيير كلمة المرور:", error);
-      setMessage({ 
-        text: error.response?.data?.message || "حدث خطأ أثناء تغيير كلمة المرور", 
-        type: "error" 
+      setMessage({
+        text:
+          error.response?.data?.message || "حدث خطأ أثناء تغيير كلمة المرور",
+        type: "error",
       });
     } finally {
       setLoading(false);
@@ -88,10 +94,10 @@ const ChangePassword = () => {
 
         {/* رسالة الحالة */}
         {message.text && (
-          <div 
+          <div
             className={`p-3 mb-4 rounded-md text-right ${
-              message.type === "success" 
-                ? "bg-green-100 text-green-700" 
+              message.type === "success"
+                ? "bg-green-100 text-green-700"
                 : "bg-red-100 text-red-700"
             }`}
           >
@@ -108,15 +114,27 @@ const ChangePassword = () => {
             >
               كلمة المرور الحالية
             </label>
-            <input
-              type="password"
-              id="lastPassword"
-              value={formData.lastPassword}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-right"
-              placeholder="أدخل كلمة المرور الحالية"
-              required
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                id="lastPassword"
+                value={formData.lastPassword}
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-right"
+                placeholder="أدخل كلمة المرور الحالية"
+                required
+              />
+              <span
+                className="absolute left-2 top-2 cursor-pointer"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? (
+                  <FiEyeOff className="h-5 w-5" />
+                ) : (
+                  <FiEye className="h-5 w-5" />
+                )}
+              </span>
+            </div>
           </div>
 
           {/* كلمة المرور الجديدة */}
@@ -127,15 +145,30 @@ const ChangePassword = () => {
             >
               كلمة المرور الجديدة
             </label>
-            <input
-              type="password"
-              id="newPassword"
-              value={formData.newPassword}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-right"
-              placeholder="أدخل كلمة المرور الجديدة"
-              required
-            />
+            <div className="relative">
+              <input
+                type={showNewPassword ? "text" : "password"}
+                id="newPassword"
+                value={formData.newPassword}
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-right"
+                placeholder="أدخل كلمة المرور الجديدة"
+                required
+              />
+              <span
+                className="absolute left-2 top-2 cursor-pointer"
+                onClick={() => {
+                  setShowNewPassword(!showNewPassword);
+                  setShowPasswordTwo(!showPasswordTwo);
+                }}
+              >
+                {showPasswordTwo ? (
+                  <FiEyeOff className="h-5 w-5" />
+                ) : (
+                  <FiEye className="h-5 w-5" />
+                )}
+              </span>
+            </div>
           </div>
 
           {/* تأكيد كلمة المرور الجديدة */}
@@ -146,27 +179,42 @@ const ChangePassword = () => {
             >
               تأكيد كلمة المرور الجديدة
             </label>
-            <input
-              type="password"
-              id="newPasswordConform"
-              value={formData.newPasswordConform}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-right"
-              placeholder="أدخل تأكيد كلمة المرور الجديدة"
-              required
-            />
+            <div className="relative">
+              <input
+                type={showNewPasswordConform ? "text" : "password"}
+                id="newPasswordConform"
+                value={formData.newPasswordConform}
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-right"
+                placeholder="أدخل تأكيد كلمة المرور الجديدة"
+                required
+              />
+              <span
+                className="absolute left-2 top-2 cursor-pointer"
+                onClick={() => {
+                  setShowNewPasswordConform(!showNewPasswordConform);
+                  setShowPasswordThree(!showPasswordThree);
+                }}
+              >
+                {showPasswordThree ? (
+                  <FiEyeOff className="h-5 w-5" />
+                ) : (
+                  <FiEye className="h-5 w-5" />
+                )}
+              </span>
+            </div>
           </div>
 
           {/* أزرار التحكم */}
           <div className="flex gap-3 justify-between space-x-4 space-x-reverse">
-            <button 
+            <button
               type="button"
               onClick={() => navigate("/")}
               className="w-1/2 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition duration-200"
             >
               إلغاء
             </button>
-            <button 
+            <button
               type="submit"
               disabled={loading}
               className="w-1/2 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition duration-200 disabled:bg-green-300"
@@ -180,4 +228,4 @@ const ChangePassword = () => {
   );
 };
 
-export default ChangePassword
+export default ChangePassword;
