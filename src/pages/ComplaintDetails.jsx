@@ -8,13 +8,13 @@ const ComplaintDetails = () => {
   const bearerToken = `Bearer ${token}`;
   const [commentText, setCommentText] = useState("");
   const [complaint, setComplaint] = useState(null);
-  const { CompDetailsId, setCompDetailsId } = useComplaintIdDetailsContext();
+  const { CompDetailsId } = useComplaintIdDetailsContext();
   const [selectedStatus, setSelectedStatus] = useState("");
   const [statusLoading, setStatusLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState({ text: "", type: "" });
   const [userRole, setUserRole] = useState("");
 
-  // إضافة حالة جديدة للتصعيد
+  const [comments, setComments] = useState([]);
   const [escalateComment, setEscalateComment] = useState("");
   const [showEscalateModal, setShowEscalateModal] = useState(false);
   const [escalateLoading, setEscalateLoading] = useState(false);
@@ -23,8 +23,8 @@ const ComplaintDetails = () => {
     type: "",
   });
 
+  // استخراج دور المستخدم من التوكن
   useEffect(() => {
-    // استخراج دور المستخدم من التوكن
     if (token) {
       try {
         const decoded = jwtDecode(token);
@@ -37,6 +37,11 @@ const ComplaintDetails = () => {
         console.error("خطأ في فك تشفير التوكن:", err);
       }
     }
+  }, [token]);
+
+  // جلب تفاصيل الشكوى
+  useEffect(() => {
+    if (!CompDetailsId) return;
 
     const fetchComplaint = async () => {
       try {
@@ -50,24 +55,26 @@ const ComplaintDetails = () => {
         );
         setComplaint(res.data);
 
-        // تعيين الحالة المحددة بناءً على حالة الشكوى الحالية
+        if (res.data.comments) {
+          setComments(res.data.comments);
+        }
+
         if (res.data.status === "InProgress") {
-          setSelectedStatus("1"); // قيد التنفيذ
+          setSelectedStatus("1");
         } else if (res.data.status === "Resolved") {
-          setSelectedStatus("4"); // تم الحل
+          setSelectedStatus("4");
         }
       } catch (err) {
         console.error(
-          "حدث خطأ أثناء جلب الشكاوي:",
+          "حدث خطأ أثناء جلب الشكوى:",
           err.response?.data || err.message
         );
       }
     };
 
     fetchComplaint();
-  }, []);
+  }, [CompDetailsId]);
 
-  // تحويل حالة الشكوى من الإنجليزية إلى العربية
   const getArabicStatus = (englishStatus) => {
     switch (englishStatus) {
       case "Pending":
@@ -84,16 +91,14 @@ const ComplaintDetails = () => {
   const handleComment = async (e) => {
     e.preventDefault();
 
-    if (!commentText.trim()) {
-      return;
-    }
+    if (!commentText.trim()) return;
 
     try {
-      const response = await axios.post(
+      await axios.post(
         "https://complain.runasp.net/api/Comment/Add-Comment-For-User",
         {
           complaintID: CompDetailsId,
-          commentText: commentText,
+          commentText,
         },
         {
           headers: {
@@ -103,22 +108,18 @@ const ComplaintDetails = () => {
         }
       );
 
-      console.log("تم إضافة التعليق بنجاح:", response.data);
-
-      // إعادة تعيين حقل التعليق
+      setComments((prev) => [
+        ...prev,
+        { commentText, createdAt: new Date().toISOString() },
+      ]);
       setCommentText("");
-
-      // يمكن إضافة تحديث للتعليقات هنا إذا كنت تريد عرض التعليق الجديد فورًا
-      // fetchComments(); // وظيفة لجلب التعليقات المحدثة
     } catch (err) {
-      console.log(
+      console.error(
         "خطأ أثناء إرسال التعليق:",
         err.response?.data || err.message
       );
     }
   };
-
-  // وظيفة تغيير حالة الشكوى
   const handleChangeStatus = async () => {
     if (!selectedStatus) return;
 
@@ -140,31 +141,20 @@ const ComplaintDetails = () => {
         }
       );
 
-      // تحديث حالة الشكوى محليًا
       const updatedComplaint = { ...complaint };
       if (selectedStatus === "1") {
         updatedComplaint.status = "InProgress";
+        setSelectedStatus("4");
       } else if (selectedStatus === "4") {
         updatedComplaint.status = "Resolved";
       }
+
       setComplaint(updatedComplaint);
-
-      setStatusMessage({
-        text: "تم تغيير حالة الشكوى بنجاح",
-        type: "success",
-      });
-
-      // إعادة تعيين الحالة المحددة بناءً على الحالة الجديدة
-      if (updatedComplaint.status === "InProgress") {
-        setSelectedStatus("4"); // تم الحل
-      }
+      setStatusMessage({ text: "تم تغيير حالة الشكوى بنجاح", type: "success" });
     } catch (err) {
-      console.error(
-        "خطأ أثناء تغيير حالة الشكوى:",
-        err.response?.data || err.message
-      );
       setStatusMessage({
-        text: err.response?.data?.message || "حدث خطأ أثناء تغيير حالة الشكوى",
+        text:
+          err.response?.data?.message || "حدث خطأ أثناء تغيير حالة الشكوى",
         type: "error",
       });
     } finally {
@@ -190,29 +180,23 @@ const ComplaintDetails = () => {
         }
       );
 
-      setEscalateMessage({
-        text: "تم تصعيد الشكوى بنجاح",
-        type: "success",
-      });
+      setEscalateMessage({ text: "تم تصعيد الشكوى بنجاح", type: "success" });
 
       setTimeout(() => {
         setShowEscalateModal(false);
         setEscalateComment("");
       }, 1500);
     } catch (err) {
-      console.error(
-        "خطأ أثناء تصعيد الشكوى:",
-        err.response?.data || err.message
-      );
       setEscalateMessage({
-        text: err.response?.data?.message || "حدث خطأ أثناء تصعيد الشكوى",
+        text:
+          err.response?.data?.message || "حدث خطأ أثناء تصعيد الشكوى",
         type: "error",
       });
     } finally {
       setEscalateLoading(false);
     }
   };
-
+console.log(complaint)
   return (
     <div className="bg-gray-100">
       <div className="min-h-screen flex items-center justify-center p-4">
@@ -221,12 +205,13 @@ const ComplaintDetails = () => {
             <h2 className="text-green-700 font-bold text-xl mb-1">
               تفاصيل الشكوى
             </h2>
-            <div className="flex justify-between items-center">
+
+            <div className="flex justify-between items-start">
               <div className="space-y-4">
                 <h3 className="text-gray-800 font-semibold text-lg">
                   {complaint?.complaintTypeName || "عنوان الشكوى"}
                 </h3>
-                <h5 className="text-gray-800 font-semibold text-l">
+                <h5>
                   <span
                     className={`px-2 py-1 rounded-md text-white text-sm ${
                       complaint?.status === "Pending"
@@ -238,15 +223,12 @@ const ComplaintDetails = () => {
                         : "bg-gray-500"
                     }`}
                   >
-                    {getArabicStatus(complaint?.status) || "تصنيف"}
+                    {getArabicStatus(complaint?.status)}
                   </span>
                 </h5>
-                <p className="text-gray-800  mt-1">
-                  {complaint?.description || "وصف الشكوى"}
-                </p>
+                <p className="text-gray-800">{complaint?.description}</p>
               </div>
 
-              {/* عرض خيارات تغيير الحالة فقط للموظفين */}
               {userRole === "Employee" && complaint?.status !== "Resolved" && (
                 <div className="flex flex-col space-y-2">
                   {statusMessage.text && (
@@ -264,12 +246,10 @@ const ComplaintDetails = () => {
                     <select
                       value={selectedStatus}
                       onChange={(e) => setSelectedStatus(e.target.value)}
-                      className="border border-gray-300 rounded-md p-1 text-sm focus:outline-none focus:ring-2 focus:ring-green-600"
+                      className="border border-gray-300 rounded-md p-1 text-sm"
                       disabled={statusLoading}
                     >
-                      <option value="" disabled>
-                        اختر الحالة
-                      </option>
+                      <option value="">اختر الحالة</option>
                       {complaint?.status === "Pending" && (
                         <option value="1">قيد التنفيذ</option>
                       )}
@@ -298,47 +278,51 @@ const ComplaintDetails = () => {
           <form onSubmit={handleComment} className="my-6">
             <h4 className="font-semibold text-gray-700 mb-2">إضافة تعليق</h4>
             <textarea
-              className="w-full border border-gray-300 rounded-md p-2 mb-3 focus:outline-none focus:ring-2 focus:ring-green-600"
+              className="w-full border border-gray-300 rounded-md p-2 mb-3"
               rows="3"
               placeholder="أدخل تعليقك"
               value={commentText}
               onChange={(e) => setCommentText(e.target.value)}
             ></textarea>
-            <button className="bg-green-700 text-white py-2 px-4 rounded-md hover:bg-green-800 w-full">
+            <button className="bg-green-700 text-white py-2 px-4 rounded-md w-full">
               إضافة تعليق
             </button>
           </form>
 
           <div className="mb-6">
             <h4 className="font-semibold text-gray-700 mb-2">التعليقات</h4>
-            <div className="bg-gray-100 p-3 rounded-md">
-              <p className="text-sm text-gray-600">
-                أنا أتفهم مخاوفك، نحن نعمل على تقليل الضوضاء.
-              </p>
-              {/* <p className="text-xs text-gray-400 mt-1">منذ ساعة</p> */}
-            </div>
+            {comments.length > 0 ? (
+              comments.map((comment, index) => (
+                <div key={index} className="bg-gray-100 p-3 rounded-md mb-2">
+                  <p className="text-gray-900">{comment.fullName}</p>
+                  <p className="text-sm text-gray-700">{comment.commentText}</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {comment.createdAt}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <p className="text-sm text-gray-500">لا توجد تعليقات بعد.</p>
+            )}
           </div>
 
-          {/* أزرار الإجراءات */}
           <div className="flex gap-2">
             <button className="flex-1 border border-green-600 text-green-700 py-2 px-4 rounded-md hover:bg-green-50">
               إغلاق الشكوى
             </button>
 
-            {/* زر تصعيد الشكوى - يظهر للموظفين فقط */}
             {userRole === "Employee" && (
               <button
                 onClick={() => setShowEscalateModal(true)}
-                className="flex-1 border py-2 px-4 rounded-md text-white bg-green-700 hover:bg-green-800"
+                className="flex-1 bg-green-700 text-white py-2 px-4 rounded-md hover:bg-green-800"
               >
                 تصعيد الشكوى
               </button>
             )}
           </div>
 
-          {/* نافذة منبثقة لتصعيد الشكوى */}
           {showEscalateModal && (
-            <div className="fixed inset-0 bg-black/70 bg-opacity-50 flex items-center justify-center z-50">
+            <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
               <div className="bg-white p-6 rounded-lg w-full max-w-md">
                 <h3 className="text-xl font-bold text-gray-800 mb-4">
                   تصعيد الشكوى
@@ -363,7 +347,7 @@ const ComplaintDetails = () => {
                   <textarea
                     value={escalateComment}
                     onChange={(e) => setEscalateComment(e.target.value)}
-                    className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="w-full border border-gray-300 rounded-md p-2"
                     rows="3"
                     placeholder="أدخل سبب التصعيد (اختياري)"
                   ></textarea>
