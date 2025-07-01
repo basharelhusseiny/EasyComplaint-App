@@ -13,7 +13,6 @@ const ComplaintDetails = () => {
   const [statusLoading, setStatusLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState({ text: "", type: "" });
   const [userRole, setUserRole] = useState("");
-
   const [comments, setComments] = useState([]);
   const [escalateComment, setEscalateComment] = useState("");
   const [showEscalateModal, setShowEscalateModal] = useState(false);
@@ -50,15 +49,13 @@ const ComplaintDetails = () => {
           {
             headers: {
               Authorization: bearerToken,
+              "Cache-Control": "no-cache",
             },
           }
         );
+        console.log("استجابة API:", res.data); // للتصحيح
         setComplaint(res.data);
-
-        if (res.data.comments) {
-          setComments(res.data.comments);
-        }
-
+        setComments(res.data.comments || []); // ضمان أن comments مصفوفة
         if (res.data.status === "InProgress") {
           setSelectedStatus("1");
         } else if (res.data.status === "Resolved") {
@@ -73,7 +70,7 @@ const ComplaintDetails = () => {
     };
 
     fetchComplaint();
-  }, [CompDetailsId]);
+  }, [CompDetailsId, bearerToken]);
 
   const getArabicStatus = (englishStatus) => {
     switch (englishStatus) {
@@ -90,7 +87,6 @@ const ComplaintDetails = () => {
 
   const handleComment = async (e) => {
     e.preventDefault();
-
     if (!commentText.trim()) return;
 
     try {
@@ -108,10 +104,18 @@ const ComplaintDetails = () => {
         }
       );
 
-      setComments((prev) => [
-        ...prev,
-        { commentText, createdAt: new Date().toISOString() },
-      ]);
+      // إعادة جلب بيانات الشكوى
+      const res = await axios.get(
+        `https://complain.runasp.net/api/Complaint/GetComplaintByID?id=${CompDetailsId}`,
+        {
+          headers: {
+            Authorization: bearerToken,
+            "Cache-Control": "no-cache",
+          },
+        }
+      );
+      setComplaint(res.data);
+      setComments(res.data.comments || []);
       setCommentText("");
     } catch (err) {
       console.error(
@@ -120,6 +124,7 @@ const ComplaintDetails = () => {
       );
     }
   };
+
   const handleChangeStatus = async () => {
     if (!selectedStatus) return;
 
@@ -153,8 +158,7 @@ const ComplaintDetails = () => {
       setStatusMessage({ text: "تم تغيير حالة الشكوى بنجاح", type: "success" });
     } catch (err) {
       setStatusMessage({
-        text:
-          err.response?.data?.message || "حدث خطأ أثناء تغيير حالة الشكوى",
+        text: err.response?.data?.message || "حدث خطأ أثناء تغيير حالة الشكوى",
         type: "error",
       });
     } finally {
@@ -188,15 +192,14 @@ const ComplaintDetails = () => {
       }, 1500);
     } catch (err) {
       setEscalateMessage({
-        text:
-          err.response?.data?.message || "حدث خطأ أثناء تصعيد الشكوى",
+        text: err.response?.data?.message || "حدث خطأ أثناء تصعيد الشكوى",
         type: "error",
       });
     } finally {
       setEscalateLoading(false);
     }
   };
-console.log(complaint)
+
   return (
     <div className="bg-gray-100">
       <div className="min-h-screen flex items-center justify-center p-4">
@@ -274,7 +277,26 @@ console.log(complaint)
               )}
             </div>
           </div>
-
+          {/* المرفقات */}
+          <div className="mb-6">
+            <h4 className="font-semibold text-gray-700 mb-2">المرفقات</h4>
+            {complaint?.attachments && complaint.attachments.length > 0 ? (
+              complaint.attachments.map((attachment, index) => (
+                <div key={index} className="bg-gray-100 p-3 rounded-md mb-2">
+                  <a
+                    href={attachment}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline"
+                  >
+                   الملف المرفق
+                  </a>
+                </div>
+              ))
+            ) : (
+              <p className="text-sm text-gray-500">لا توجد مرفقات.</p>
+            )}
+          </div>
           <form onSubmit={handleComment} className="my-6">
             <h4 className="font-semibold text-gray-700 mb-2">إضافة تعليق</h4>
             <textarea
@@ -294,9 +316,11 @@ console.log(complaint)
             {comments.length > 0 ? (
               comments.map((comment, index) => (
                 <div key={index} className="bg-gray-100 p-3 rounded-md mb-2">
-                  <p className="text-gray-900">{comment.fullName}</p>
-                  <p className="text-sm text-gray-700">{comment.commentText}</p>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-[17px] text-gray-900 font-semibold">
+                    {comment.fullName}
+                  </p>
+                  {comment.text}{" "}
+                  <p className="text-sm text-gray-500 my-2">
                     {comment.createdAt}
                   </p>
                 </div>
