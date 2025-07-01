@@ -38,12 +38,6 @@ const Layout = () => {
       path: "/editSignUp",
     },
     {
-      id: 6,
-      link: "تفاصيل الشكوي",
-      path: "/complaintDetails",
-      roles: ["Complainer", "Employee"],
-    },
-    {
       id: 7,
       link: "قائمة الشكاوي",
       path: "/listOfComplaints",
