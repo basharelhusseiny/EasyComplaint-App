@@ -1,10 +1,11 @@
 import { FaCheckCircle } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router";
+import { useWebsiteInfo } from "../../context/WebsiteContext";
 
 const CallToAction = () => {
   const navigate = useNavigate();
-
+ const { websiteInfo } = useWebsiteInfo();
   const priorities = [
     "تحسين جودة المحاضرات والتفاعل",
     "تحسين جودة المحاضرات والتفاعل",
@@ -23,7 +24,7 @@ const CallToAction = () => {
             className="w-full md:w-1/2 space-y-6"
           >
             <h2 className="text-3xl font-bold text-right text-gray-800">
-              صوتك يصنع الفرق في كلية العلوم!
+              صوتك يصنع الفرق في {websiteInfo?.name}!
             </h2>
             <p className="text-gray-600 text-right">
               نؤمن بأن التطوير يبدأ منكم! شارك شكواك أو اقتراحاتك وساهم في تحسين

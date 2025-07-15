@@ -22,6 +22,8 @@ import AddWorkflow from "./pages/AddWorkflow";
 import ChangePassword from "./pages/ChangePassword";
 import ListOfComplaintEmp from "./pages/ListOfComplaintEmp";
 import ContactUs from "./pages/ContactUs";
+import WebsiteManagement from "./pages/WebsiteManagement";
+import { WebsiteProvider } from "./context/WebsiteContext";
 
 const router = createBrowserRouter([
   {
@@ -137,6 +139,14 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      {
+        path: "/websiteMangment",
+        element: (
+          <ProtectedRoute allowedRoles={["Admin"]}>
+            <WebsiteManagement />
+          </ProtectedRoute>
+        ),
+      },
     ],
   },
   { path: "/login", element: <LoginPage /> },
@@ -155,13 +165,15 @@ const router = createBrowserRouter([
 
 const App = () => {
   return (
-    <IdOfComplaintDetailsProvider>
-      <MobileMenuProvider>
-        <ComplaintIdProvider>
-          <RouterProvider router={router} />
-        </ComplaintIdProvider>
-      </MobileMenuProvider>
-    </IdOfComplaintDetailsProvider>
+    <WebsiteProvider>
+      <IdOfComplaintDetailsProvider>
+        <MobileMenuProvider>
+          <ComplaintIdProvider>
+            <RouterProvider router={router} />
+          </ComplaintIdProvider>
+        </MobileMenuProvider>
+      </IdOfComplaintDetailsProvider>
+    </WebsiteProvider>
   );
 };
 

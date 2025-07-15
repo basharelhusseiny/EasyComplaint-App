@@ -113,7 +113,7 @@ const LoginPage = () => {
             </div>
 
             {/* Radio role */}
-            <div>
+            {/* <div>
               <div className="flex justify-around gap-2">
                 <div className="flex items-center gap-2">
                   <input
@@ -164,7 +164,7 @@ const LoginPage = () => {
                   </label>
                 </div>
               </div>
-            </div>
+            </div> */}
 
             <div className="text-right">
               <Link

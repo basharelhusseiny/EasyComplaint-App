@@ -1,6 +1,37 @@
 import React from "react";
+import { useWebsiteInfo } from "../context/WebsiteContext";
 
 const ContactUs = () => {
+  const { websiteInfo } = useWebsiteInfo();
+
+  const socialLinks = [
+    {
+      name: "فيسبوك",
+      url: websiteInfo?.facebookLink,
+      color: "bg-blue-600 hover:bg-blue-700",
+    },
+    {
+      name: "تويتر",
+      url: websiteInfo?.twitterLink,
+      color: "bg-sky-500 hover:bg-sky-600",
+    },
+    {
+      name: "إنستجرام",
+      url: websiteInfo?.instagramLink,
+      color: "bg-pink-600 hover:bg-pink-700",
+    },
+    {
+      name: "لينكد إن",
+      url: websiteInfo?.linkedInLink,
+      color: "bg-blue-800 hover:bg-blue-900",
+    },
+    {
+      name: "يوتيوب",
+      url: websiteInfo?.youTubeLink,
+      color: "bg-red-600 hover:bg-red-700",
+    },
+  ];
+
   return (
     <div className="bg-gray-100 min-h-screen py-12">
       <div className="max-w-5xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
@@ -37,7 +68,7 @@ const ContactUs = () => {
                 </h2>
               </div>
               <p className="text-gray-600 text-right">
-                المنوفية- شبين - مجمع الكليات{" "}
+                {websiteInfo?.governorate}- {websiteInfo?.city}{" "}
               </p>
             </div>
 
@@ -66,10 +97,10 @@ const ContactUs = () => {
               </div>
               <p className="text-gray-600 text-right">
                 <a
-                  href="mailto:info@science.cu.edu.eg"
+                  href={`mailto:${websiteInfo?.email}`}
                   className="text-green-600 hover:underline"
                 >
-                  info@science.cu.edu.eg
+                  {websiteInfo?.email}
                 </a>
               </p>
             </div>
@@ -98,9 +129,31 @@ const ContactUs = () => {
                 </h2>
               </div>
               <div className="text-gray-600 text-right">
-                <p>هاتف: 0223567823</p>
-                <p>فاكس: 0223567824</p>
+                <p>هاتف: {websiteInfo?.phoneNumber}</p>
               </div>
+            </div>
+          </div>
+
+          {/* روابط التواصل الاجتماعي */}
+          <div className="mt-8">
+            <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">
+              تابعنا على وسائل التواصل الاجتماعي
+            </h2>
+            <div className="flex flex-wrap justify-center gap-4">
+              {socialLinks.map(
+                (social, index) =>
+                  social.url && (
+                    <a
+                      key={index}
+                      href={social.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`${social.color} text-white px-6 py-3 rounded-lg flex items-center gap-2 transition duration-200 transform hover:scale-105`}
+                    >
+                      <span className="font-medium">{social.name}</span>
+                    </a>
+                  )
+              )}
             </div>
           </div>
         </div>

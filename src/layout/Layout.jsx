@@ -15,6 +15,12 @@ const Layout = () => {
   const allNavLinks = [
     { id: 1, link: "الصفحة الرئيسية", path: "/" },
     {
+      id: 13,
+      link: "إدارة المحتوي",
+      path: "/websiteMangment",
+      roles: ["Admin"],
+    },
+    {
       id: 2,
       link: "إدارة أنواع الشكاوي",
       path: "/complaintTypesManager",

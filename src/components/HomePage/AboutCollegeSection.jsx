@@ -1,8 +1,10 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router";
+import { useWebsiteInfo } from "../../context/WebsiteContext";
 
 const AboutCollegeSection = () => {
   const navigate = useNavigate()
+    const { websiteInfo } = useWebsiteInfo();
   const features = [
     { id: 1, title: "الخدمات التعليمية", icon: "🎓" },
     { id: 2, title: "الخدمات الطلابية", icon: "👨‍🎓" },
@@ -22,7 +24,7 @@ const AboutCollegeSection = () => {
           >
             <div className="space-y-2">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-800">
-                مرحبا بكم في كلية العلوم
+                مرحبا بكم في {websiteInfo?.name}
               </h2>
               <p className="text-xl text-green-600 font-semibold">
                 بوابتك لعالم المعرفة والتجربة
@@ -30,12 +32,12 @@ const AboutCollegeSection = () => {
             </div>
 
             <p className="text-gray-600 leading-relaxed">
-              أكثر من 15 عاما من العمل في كلية العلوم جعلتنا نطور منصتنا لتوفير
+              أكثر من 15 عاما من العمل في {websiteInfo?.name} جعلتنا نطور منصتنا لتوفير
               أفضل طريقة لاستقبال اقتراحاتكم وشكاويكم.
             </p>
 
             <p className="text-gray-600 leading-relaxed">
-              كلية العلوم هي المركز الرئيسي للبحث والتطوير، حيث يجتمع العلم
+              {websiteInfo?.name} هي المركز الرئيسي للبحث والتطوير، حيث يجتمع العلم
               والمعرفة لبناء مستقبل أفضل. نأسس على أسس الابتكار والاستكشافات
               ونسعى دائمًا إلى تحسين بيئتنا التعليمية والتجريبية ومن خلال العمل
               في إنشاء مجتمع أكاديمي وسيلة فعالة لاستقبال اقتراحاتكم وشكاويكم.

@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
+import { useWebsiteInfo } from "../../context/WebsiteContext";
 
 const CollegeOverview = () => {
   const stats = [
@@ -14,7 +15,7 @@ const CollegeOverview = () => {
     { id: 3, number: 50, prefix: "+", text: "قضية تحسنت بفضل اقتراحاتكم" },
     { id: 4, number: 200, prefix: "+", text: "ملاحظة تم أخذها لتطوير الخدمات" },
   ];
-
+ const { websiteInfo } = useWebsiteInfo();
   const statsRef = useRef(null);
   const isInView = useInView(statsRef, { once: true, amount: 0.1 });
 
@@ -81,7 +82,7 @@ const CollegeOverview = () => {
               className="relative z-5 w-full lg:w-1/2 text-right"
             >
               <p className="text-base md:text-lg leading-relaxed">
-                كلية العلوم هي واحدة من أعرق كليات جامعتنا، وتشتهر بتخصصاتها
+                {websiteInfo?.name} هي واحدة من أعرق كليات جامعتنا، وتشتهر بتخصصاتها
                 المتنوعة في مجالات الفيزياء والكيمياء وعلوم الحاسب. لقد أعدت
                 المختبرات العلمية والتكنولوجية لتوفر مناخًا مثاليًا لدعم مسيرة
                 البحث العلمي والابتكار. بالإضافة إلى ذلك، نحن ملتزمون بدعم

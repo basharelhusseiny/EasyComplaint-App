@@ -3,9 +3,11 @@ import { FiMenu } from "react-icons/fi";
 import CloseButton from "../../common/CloseButton";
 import { useMobileMenuContext } from "../../context/MobileMenuContext";
 import { CiLogout } from "react-icons/ci";
+import { useWebsiteInfo } from "../../context/WebsiteContext";
 
 const Header = ({ navLinks }) => {
   const { isMobMenuOpen, setIsMobMenuOpen } = useMobileMenuContext();
+  const { websiteInfo } = useWebsiteInfo();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -22,7 +24,7 @@ const Header = ({ navLinks }) => {
           {/* Logo */}
           <div>
             <Link to="/" className="block font-bold text-xl text-green-600">
-              كلية العلوم
+             {websiteInfo?.name}
             </Link>
           </div>
 
