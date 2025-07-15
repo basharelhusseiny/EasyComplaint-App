@@ -47,14 +47,25 @@ const ListOfComplaints = () => {
         return arabicStatus;
     }
   };
-
+  const getStatusNumber = (arabicStatus) => {
+    switch (arabicStatus) {
+      case "معلق":
+        return 0; // Pending
+      case "قيد التنفيذ":
+        return 1; // InProgress
+      case "تم الحل":
+        return 4; // Resolved
+      default:
+        return 0;
+    }
+  };
   const fetchComplaints = async (page) => {
     setLoading(true);
     try {
       console.log(`جاري جلب الصفحة ${page}...`);
-
+      const statusNumber = getStatusNumber(activeStatus);
       const response = await axios.get(
-        `https://complain.runasp.net/api/Complaint/MyComplaints`,
+        `https://complain.runasp.net/api/Complaint/AssingedComplaints?status=${statusNumber}`,
         {
           headers: {
             Authorization: bearerToken,
@@ -80,7 +91,7 @@ const ListOfComplaints = () => {
       setLoading(false);
     }
   };
-  
+
   // استدعاء API عند تغيير رقم الصفحة
   useEffect(() => {
     fetchComplaints(pageNumber);
@@ -114,9 +125,14 @@ const ListOfComplaints = () => {
 
   // حساب عدد الشكاوى لكل حالة
   const countByStatus = {
-    "معلق": complaints.filter(comp => getArabicStatus(comp.status) === "معلق").length,
-    "قيد التنفيذ": complaints.filter(comp => getArabicStatus(comp.status) === "قيد التنفيذ").length,
-    "تم الحل": complaints.filter(comp => getArabicStatus(comp.status) === "تم الحل").length
+    معلق: complaints.filter((comp) => getArabicStatus(comp.status) === "معلق")
+      .length,
+    "قيد التنفيذ": complaints.filter(
+      (comp) => getArabicStatus(comp.status) === "قيد التنفيذ"
+    ).length,
+    "تم الحل": complaints.filter(
+      (comp) => getArabicStatus(comp.status) === "تم الحل"
+    ).length,
   };
 
   return (
