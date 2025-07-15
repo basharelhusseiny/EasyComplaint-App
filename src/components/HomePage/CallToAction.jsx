@@ -5,11 +5,12 @@ import { useWebsiteInfo } from "../../context/WebsiteContext";
 
 const CallToAction = () => {
   const navigate = useNavigate();
- const { websiteInfo } = useWebsiteInfo();
+  const { websiteInfo } = useWebsiteInfo();
   const priorities = [
-    "تحسين جودة المحاضرات والتفاعل",
-    "تحسين جودة المحاضرات والتفاعل",
-    "تحسين جودة المحاضرات والتفاعل",
+    "تحسين جودة بيئة العمل والتواصل",
+    "تطوير كفاءة الخدمات الإدارية",
+    "تعزيز سرعة الاستجابة للمشكلات",
+    "خلق بيئة عمل أكثر احترافية",
   ];
 
   return (
@@ -24,11 +25,11 @@ const CallToAction = () => {
             className="w-full md:w-1/2 space-y-6"
           >
             <h2 className="text-3xl font-bold text-right text-gray-800">
-              صوتك يصنع الفرق في {websiteInfo?.name}!
+              صوتك يصنع الفارق داخل مؤسستك!
             </h2>
             <p className="text-gray-600 text-right">
-              نؤمن بأن التطوير يبدأ منكم! شارك شكواك أو اقتراحاتك وساهم في تحسين
-              بيئة التعلم والبحث العلمي
+              نؤمن بأن التحسين يبدأ من الداخل. شارك شكواك أو اقتراحاتك وساهم في
+              تطوير بيئة العمل وتعزيز كفاءة المؤسسة.
             </p>
             <div className="flex justify-between gap-4 mt-4">
               <button
@@ -46,12 +47,6 @@ const CallToAction = () => {
               أولوياتنا في الاستماع إليك:
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {priorities.map((priority, index) => (
-                <div key={index} className="flex items-center gap-2 text-right">
-                  <FaCheckCircle className="text-green-600 flex-shrink-0" />
-                  <span className="text-gray-700">{priority}</span>
-                </div>
-              ))}
               {priorities.map((priority, index) => (
                 <div
                   key={index + 3}

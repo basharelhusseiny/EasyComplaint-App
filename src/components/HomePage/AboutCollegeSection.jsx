@@ -3,8 +3,8 @@ import { useNavigate } from "react-router";
 import { useWebsiteInfo } from "../../context/WebsiteContext";
 
 const AboutCollegeSection = () => {
-  const navigate = useNavigate()
-    const { websiteInfo } = useWebsiteInfo();
+  const navigate = useNavigate();
+  const { websiteInfo } = useWebsiteInfo();
   const features = [
     { id: 1, title: "الخدمات التعليمية", icon: "🎓" },
     { id: 2, title: "الخدمات الطلابية", icon: "👨‍🎓" },
@@ -32,18 +32,16 @@ const AboutCollegeSection = () => {
             </div>
 
             <p className="text-gray-600 leading-relaxed">
-              أكثر من 15 عاما من العمل في {websiteInfo?.name} جعلتنا نطور منصتنا لتوفير
-              أفضل طريقة لاستقبال اقتراحاتكم وشكاويكم.
+              مرحبًا بكم في منصتكم الداخلية بوابتكم نحو بيئة عمل أفضل وتطوير
+              مستمر
             </p>
 
             <p className="text-gray-600 leading-relaxed">
-              {websiteInfo?.name} هي المركز الرئيسي للبحث والتطوير، حيث يجتمع العلم
-              والمعرفة لبناء مستقبل أفضل. نأسس على أسس الابتكار والاستكشافات
-              ونسعى دائمًا إلى تحسين بيئتنا التعليمية والتجريبية ومن خلال العمل
-              في إنشاء مجتمع أكاديمي وسيلة فعالة لاستقبال اقتراحاتكم وشكاويكم.
-              فمعا يمكننا أن نطور الخدمات ونحسن التجربة التعليمية والإدارية
-              لجميع الطلاب وأعضاء هيئة التدريس. نؤمن أن وجودكم هو المحرك الأساسي
-              للتقدم ونسعى جاهدين للاستماع إلى آرائكم والعمل على تحقيق تطلعاتكم.
+              لأكثر من 15 عامًا من العمل والخبرة، نحرص على تطوير أدواتنا لتقديم
+              أفضل طريقة لاستقبال اقتراحاتكم وشكاواكم. نحن نؤمن بأن بيئة العمل
+              الفعالة تبدأ من الإنصات الحقيقي للعاملين، وسعينا الدائم لتحسين
+              تجربة العمل، ورفع كفاءة الأداء، وتعزيز التواصل الداخلي معكم يمكننا
+              تحسين الخدمات وتطوير الأداء المؤسسي… فأنتم محرك التغيير الحقيقي.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8">
@@ -58,7 +56,10 @@ const AboutCollegeSection = () => {
               ))}
             </div>
 
-            <button onClick={()=>navigate("/contact")} className="mt-6 bg-gradient-to-bl from-green-400 to-green-800 hover:from-green-800 hover:to-green-400 px-6 py-3 rounded-xl text-white cursor-pointer font-semibold hover:scale-105 duration-200 transition-all shadow-md">
+            <button
+              onClick={() => navigate("/contact")}
+              className="mt-6 bg-gradient-to-bl from-green-400 to-green-800 hover:from-green-800 hover:to-green-400 px-6 py-3 rounded-xl text-white cursor-pointer font-semibold hover:scale-105 duration-200 transition-all shadow-md"
+            >
               تقديم شكوى
             </button>
           </motion.div>

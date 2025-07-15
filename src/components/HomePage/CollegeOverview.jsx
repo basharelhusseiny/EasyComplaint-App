@@ -15,7 +15,7 @@ const CollegeOverview = () => {
     { id: 3, number: 50, prefix: "+", text: "قضية تحسنت بفضل اقتراحاتكم" },
     { id: 4, number: 200, prefix: "+", text: "ملاحظة تم أخذها لتطوير الخدمات" },
   ];
- const { websiteInfo } = useWebsiteInfo();
+  const { websiteInfo } = useWebsiteInfo();
   const statsRef = useRef(null);
   const isInView = useInView(statsRef, { once: true, amount: 0.1 });
 
@@ -82,12 +82,11 @@ const CollegeOverview = () => {
               className="relative z-5 w-full lg:w-1/2 text-right"
             >
               <p className="text-base md:text-lg leading-relaxed">
-                {websiteInfo?.name} هي واحدة من أعرق كليات جامعتنا، وتشتهر بتخصصاتها
-                المتنوعة في مجالات الفيزياء والكيمياء وعلوم الحاسب. لقد أعدت
-                المختبرات العلمية والتكنولوجية لتوفر مناخًا مثاليًا لدعم مسيرة
-                البحث العلمي والابتكار. بالإضافة إلى ذلك، نحن ملتزمون بدعم
-                الطلاب وتحسين تجربة التعليم من خلال الاستماع للاقتراحات والشكاوى
-                والعمل على تطويرها.
+                مؤسستنا تُعد من الكيانات الرائدة بخبراتها المتنوعة في قطاعات
+                متعددة. نعمل على توفير بيئة احترافية تشجع على الابتكار وتدعم
+                التطوير الإداري والتقني. نحن ملتزمون بتحسين تجربة العاملين من
+                خلال الإنصات الفعّال للاقتراحات والشكاوى والعمل الجاد على
+                معالجتها وتطوير الأداء بناءً عليها.
               </p>
               <button className="mt-7 bg-gradient-to-bl from-green-400 to-green-800 hover:from-green-800 hover:to-green-400 px-5 py-2 rounded-xl text-white cursor-pointer font-semibold duration-200 transition-colors">
                 عرض المزيد

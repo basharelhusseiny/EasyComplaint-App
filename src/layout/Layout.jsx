@@ -49,12 +49,12 @@ const Layout = () => {
       path: "/listOfComplaints",
       roles: ["Complainer"],
     },
-    {
-      id: 8,
-      link: "تفاصيل المستخدم",
-      path: "/userDetails",
-      roles: ["Admin"],
-    },
+    // {
+    //   id: 8,
+    //   link: "تفاصيل المستخدم",
+    //   path: "/userDetails",
+    //   roles: ["Admin"],
+    // },
     {
       id: 9,
       link: "تقديم شكوي ",

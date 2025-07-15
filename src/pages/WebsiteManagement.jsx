@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router";
+import { useWebsiteInfo } from "../context/WebsiteContext";
 
 const WebsiteManagement = () => {
   const navigate = useNavigate();
+  const { websiteInfo } = useWebsiteInfo();
   const token = localStorage.getItem("token");
   const bearerToken = `Bearer ${token}`;
 
@@ -24,6 +26,25 @@ const WebsiteManagement = () => {
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "" });
+
+  useEffect(() => {
+    if (websiteInfo) {
+      setFormData({
+        name: websiteInfo.name || "",
+        email: websiteInfo.email || "",
+        phoneNumber: websiteInfo.phoneNumber || "",
+        logo: websiteInfo.logo || "",
+        description: websiteInfo.description || "",
+        governorate: websiteInfo.governorate || "",
+        city: websiteInfo.city || "",
+        facebookLink: websiteInfo.facebookLink || "",
+        twitterLink: websiteInfo.twitterLink || "",
+        instagramLink: websiteInfo.instagramLink || "",
+        linkedInLink: websiteInfo.linkedInLink || "",
+        youTubeLink: websiteInfo.youTubeLink || "",
+      });
+    }
+  }, [websiteInfo]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -52,7 +73,7 @@ const WebsiteManagement = () => {
       setMessage({ text: "تم تحديث معلومات الموقع بنجاح", type: "success" });
       setTimeout(() => {
         navigate("/", { replace: true });
-        window.location.reload(); 
+        window.location.reload();
       }, 1500);
     } catch (error) {
       console.error("API Error:", error.response?.data || error.message);
@@ -133,7 +154,7 @@ const WebsiteManagement = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                رابط الشعار <span className="text-red-500">*</span>
+                رابط الشعار
               </label>
               <input
                 type="text"
@@ -142,7 +163,6 @@ const WebsiteManagement = () => {
                 onChange={handleInputChange}
                 className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                 placeholder="أدخل رابط الشعار"
-                required
               />
             </div>
 
@@ -179,7 +199,7 @@ const WebsiteManagement = () => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              الوصف <span className="text-red-500">*</span>
+              الوصف
             </label>
             <textarea
               name="description"
@@ -188,14 +208,13 @@ const WebsiteManagement = () => {
               rows="3"
               className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
               placeholder="أدخل وصف الموقع"
-              required
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                رابط فيسبوك <span className="text-red-500">*</span>
+                رابط فيسبوك
               </label>
               <input
                 type="url"
@@ -204,13 +223,12 @@ const WebsiteManagement = () => {
                 onChange={handleInputChange}
                 className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                 placeholder="أدخل رابط فيسبوك"
-                required
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                رابط تويتر <span className="text-red-500">*</span>
+                رابط تويتر
               </label>
               <input
                 type="url"
@@ -219,13 +237,12 @@ const WebsiteManagement = () => {
                 onChange={handleInputChange}
                 className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                 placeholder="أدخل رابط تويتر"
-                required
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                رابط إنستجرام <span className="text-red-500">*</span>
+                رابط إنستجرام
               </label>
               <input
                 type="url"
@@ -234,13 +251,12 @@ const WebsiteManagement = () => {
                 onChange={handleInputChange}
                 className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                 placeholder="أدخل رابط إنستجرام"
-                required
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                رابط لينكد إن <span className="text-red-500">*</span>
+                رابط لينكد إن
               </label>
               <input
                 type="url"
@@ -249,13 +265,12 @@ const WebsiteManagement = () => {
                 onChange={handleInputChange}
                 className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                 placeholder="أدخل رابط لينكد إن"
-                required
               />
             </div>
 
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                رابط يوتيوب <span className="text-red-500">*</span>
+                رابط يوتيوب
               </label>
               <input
                 type="url"
@@ -264,7 +279,6 @@ const WebsiteManagement = () => {
                 onChange={handleInputChange}
                 className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                 placeholder="أدخل رابط يوتيوب"
-                required
               />
             </div>
           </div>
