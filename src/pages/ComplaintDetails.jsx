@@ -95,6 +95,7 @@ const ComplaintDetails = () => {
         {
           complaintID: CompDetailsId,
           commentText,
+          roleName: userRole, // ضيف الـ role هنا
         },
         {
           headers: {
@@ -289,7 +290,7 @@ const ComplaintDetails = () => {
                     rel="noopener noreferrer"
                     className="text-blue-600 hover:underline"
                   >
-                   الملف المرفق
+                    الملف المرفق
                   </a>
                 </div>
               ))
